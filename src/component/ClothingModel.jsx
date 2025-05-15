@@ -1,5 +1,6 @@
 import { useGLTF } from "@react-three/drei";
 import { useEffect } from "react";
+import { useLoader } from "@react-three/fiber";
 
 function ClothingModel({ modelPath, meshColors }) {
   const { scene } = useGLTF(modelPath);

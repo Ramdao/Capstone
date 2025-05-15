@@ -4,30 +4,39 @@ import { useEffect, useState } from "react";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import ClothingModel from "./ClothingModel.jsx";
 import ARClothingViewer from "./ARClothingViewer";
-
-// ✅ Move this up here
-const modelFiles = [
-  "/models/woman_dress.glb",
-  "/models/clothing.glb",
-];
+import { storage, ref, listAll, getDownloadURL } from "../firebase.js";
 
 export default function ClothViewer() {
-  const [selectedModel, setSelectedModel] = useState(modelFiles[0]);
+  const [modelFiles, setModelFiles] = useState([]);
+  const [selectedModel, setSelectedModel] = useState(null);
   const [meshNames, setMeshNames] = useState([]);
   const [meshColors, setMeshColors] = useState({});
   const [isMobile, setIsMobile] = useState(false);
 
+  // Load model URLs from Firebase
   useEffect(() => {
-    // Simple mobile detection
+    const fetchModels = async () => {
+      const modelRef = ref(storage, ""); // root folder of your bucket
+      const res = await listAll(modelRef);
+      const urls = await Promise.all(res.items.map(item => getDownloadURL(item)));
+
+      setModelFiles(urls);
+      setSelectedModel(urls[0]); // Set first model as default
+    };
+
+    fetchModels();
     setIsMobile(window.innerWidth <= 768);
+  }, []);
+
+  // Load mesh names + set initial colors when model changes
+  useEffect(() => {
+    if (!selectedModel) return;
 
     const loader = new GLTFLoader();
     loader.load(selectedModel, (gltf) => {
       const names = [];
       gltf.scene.traverse((child) => {
-        if (child.isMesh) {
-          names.push(child.name);
-        }
+        if (child.isMesh) names.push(child.name);
       });
       setMeshNames(names);
 
@@ -73,7 +82,7 @@ export default function ClothViewer() {
           <directionalLight position={[10, 10, 5]} />
           <Bounds fit clip observe margin={1.5}>
             <group rotation={[0, Math.PI, 0]}>
-              <ClothingModel modelPath={selectedModel} meshColors={meshColors} />
+              {selectedModel && <ClothingModel modelPath={selectedModel} meshColors={meshColors} />}
             </group>
           </Bounds>
           <OrbitControls makeDefault />
@@ -96,7 +105,7 @@ export default function ClothViewer() {
       </div>
 
       {/* Mobile AR Viewer */}
-      {isMobile && <ARClothingViewer modelPath={selectedModel} />}
+      {isMobile && selectedModel && <ARClothingViewer modelPath={selectedModel} />}
     </div>
   );
 }
