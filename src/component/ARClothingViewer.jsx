@@ -9,7 +9,7 @@ const ARClothingViewer = ({ modelPath }) => {
   const iosSrc = modelPath.replace(".glb", ".usdz");
 
   return (
-    <div style={{ padding: "2rem", position: "absolute", top: "150%", left: "1px", right: 0 }}>
+    <div style={{ padding: "2rem", position: "absolute", top: "190%", left: "1px", right: 0 }}>
       <h2>View Clothing in AR</h2>
 
       {showAR && (

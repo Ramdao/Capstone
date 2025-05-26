@@ -6,7 +6,7 @@ import ClothingModel from "./ClothingModel.jsx";
 import ARClothingViewer from "./ARClothingViewer";
 import { storage, ref, listAll, getDownloadURL } from "../firebase.js";
 
-export default function ClothViewer() {
+export default function ClothViewer({ embedMode = false }) {
   const [modelFiles, setModelFiles] = useState([]);
   const [selectedModel, setSelectedModel] = useState(null);
   const [meshNames, setMeshNames] = useState([]);
@@ -16,12 +16,21 @@ export default function ClothViewer() {
   // Load model URLs from Firebase
   useEffect(() => {
     const fetchModels = async () => {
-      const modelRef = ref(storage, ""); // root folder of your bucket
-      const res = await listAll(modelRef);
-      const urls = await Promise.all(res.items.map(item => getDownloadURL(item)));
+      const rootRef = ref(storage, ""); // root
+      const folderRef = ref(storage, "clients/defaultUser"); 
 
-      setModelFiles(urls);
-      setSelectedModel(urls[0]); // Set first model as default
+      const [rootList, folderList] = await Promise.all([
+        listAll(rootRef),
+        listAll(folderRef),
+      ]);
+
+      const rootUrls = await Promise.all(rootList.items.map(item => getDownloadURL(item)));
+      const folderUrls = await Promise.all(folderList.items.map(item => getDownloadURL(item)));
+
+      const allUrls = [...rootUrls, ...folderUrls];
+
+      setModelFiles(allUrls);
+      setSelectedModel(allUrls[0]); // Set first model as default
     };
 
     fetchModels();
@@ -52,45 +61,92 @@ export default function ClothViewer() {
     setMeshColors((prev) => ({ ...prev, [meshName]: newColor }));
   };
 
-  return (
-    <div style={{ display: "flex", flexDirection: "column", height: "130vh" }}>
-      {/* Model Selection */}
-      <div style={{ display: "flex", overflowX: "auto", padding: "2rem", background: "#333" }}>
-        {modelFiles.map((model, index) => (
-          <button
-            key={index}
-            onClick={() => setSelectedModel(model)}
-            style={{
-              marginRight: "1rem",
-              padding: "1.5rem",
-              background: selectedModel === model ? "#555" : "#888",
-              color: "white",
-              border: "none",
-              cursor: "pointer",
-              borderRadius: "5px"
-            }}
-          >
-            Model {index + 1}
-          </button>
-        ))}
-      </div>
+  // Arrow button handlers for next/prev model
+  const nextModel = () => {
+    if (!modelFiles.length) return;
+    const currentIndex = modelFiles.indexOf(selectedModel);
+    const nextIndex = (currentIndex + 1) % modelFiles.length;
+    setSelectedModel(modelFiles[nextIndex]);
+  };
 
-      {/* 3D Canvas */}
-      <div style={{ flex: 1 }}>
-        <Canvas camera={{ position: [-30, 50, -20], fov: 70 }}>
-          <ambientLight intensity={0.8} />
-          <directionalLight position={[10, 10, 5]} />
-          <Bounds fit clip observe margin={1.5}>
-            <group rotation={[0, Math.PI, 0]}>
-              {selectedModel && <ClothingModel modelPath={selectedModel} meshColors={meshColors} />}
-            </group>
-          </Bounds>
-          <OrbitControls makeDefault />
-        </Canvas>
-      </div>
+  const prevModel = () => {
+    if (!modelFiles.length) return;
+    const currentIndex = modelFiles.indexOf(selectedModel);
+    const prevIndex = (currentIndex - 1 + modelFiles.length) % modelFiles.length;
+    setSelectedModel(modelFiles[prevIndex]);
+  };
+
+  const arrowStyle = {
+    background: "transparent",
+    border: "none",
+    fontSize: "3rem",
+    color: "#fff",
+    cursor: "pointer",
+    zIndex: 2,
+    userSelect: "none",
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", height: embedMode ? "auto" : "130vh" }}>
+      {/* Model selection buttons for non-embed mode */}
+      {!embedMode && (
+        <div style={{ display: "flex", overflowX: "auto", padding: "2rem", background: "#333" }}>
+          {modelFiles.map((model, index) => (
+            <button
+              key={index}
+              onClick={() => setSelectedModel(model)}
+              style={{
+                marginRight: "1rem",
+                padding: "1.5rem",
+                background: selectedModel === model ? "#555" : "#888",
+                color: "white",
+                border: "none",
+                cursor: "pointer",
+                borderRadius: "5px"
+              }}
+            >
+              Model {index + 1}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Model viewer with arrows for embed mode */}
+      {embedMode ? (
+        <div style={{ display: "block", alignItems: "cneter", justifyContent: "center", height: "30vh", position:'absolute', width: "10vw", left: "70%", top: "50%", transform: "translate(-50%, -50%)", display: "flex" }}>
+          <button onClick={prevModel} style={arrowStyle} aria-label="Previous Model">&lt;</button>
+          <div style={{ flex: 1, height: "100%" }}>
+            <Canvas camera={{ position: [-30, 50, -20], fov: 70 }}>
+              <ambientLight intensity={0.8} />
+              <directionalLight position={[10, 10, 5]} />
+              <Bounds fit clip observe margin={1.5}>
+                <group rotation={[0, Math.PI, 0]}>
+                  {selectedModel && <ClothingModel modelPath={selectedModel} meshColors={meshColors} />}
+                </group>
+              </Bounds>
+              <OrbitControls makeDefault />
+            </Canvas>
+          </div>
+          <button onClick={nextModel} style={arrowStyle} aria-label="Next Model">&gt;</button>
+        </div>
+      ) : (
+        // Full viewer for non-embed mode
+        <div style={{ flex: 1 }}>
+          <Canvas camera={{ position: [-30, 50, -20], fov: 70 }}>
+            <ambientLight intensity={0.8} />
+            <directionalLight position={[10, 10, 5]} />
+            <Bounds fit clip observe margin={1.5}>
+              <group rotation={[0, Math.PI, 0]}>
+                {selectedModel && <ClothingModel modelPath={selectedModel} meshColors={meshColors} />}
+              </group>
+            </Bounds>
+            <OrbitControls makeDefault />
+          </Canvas>
+        </div>
+      )}
 
       {/* Color Pickers */}
-      <div style={{ padding: "1rem", background: "#222", color: "white" }}>
+      {/* <div style={{ padding: "1rem", background: "#222", color: "white" }}>
         <h3>Customize Colors</h3>
         {meshNames.map((name) => (
           <div key={name} style={{ marginBottom: "0.5rem" }}>
@@ -102,7 +158,7 @@ export default function ClothViewer() {
             />
           </div>
         ))}
-      </div>
+      </div> */}
 
       {/* Mobile AR Viewer */}
       {isMobile && selectedModel && <ARClothingViewer modelPath={selectedModel} />}

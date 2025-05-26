@@ -1,0 +1,57 @@
+h1{
+    margin-top: 0;
+    margin-bottom: 0;
+    line-height: 0.8;
+    position: relative;
+    font-size: 96px;
+    background: linear-gradient(90deg, #ff0000, #ffb700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+h2{
+     margin-top: 10px;
+    margin-bottom: 10px;
+    line-height: 0.8;
+    position: relative;
+    font-size: 48px;
+}
+
+.homepage-title{
+    display: flex;
+    flex-direction: column;
+    position:absolute;
+    top: 40%;
+    left: 20%;
+  
+}
+
+.homepage-nav{
+text-decoration: none;
+cursor: pointer;
+margin-top: 20px;
+display: flex;
+justify-content: center;
+font-family: Koulen;
+font-size: 32px;
+color:white;
+ width: 100%;
+position: relative;
+background-color: #000;
+border: 1px solid #fff;
+box-sizing: border-box;
+height: 56px;
+transition: all 0.3s ease;
+}
+
+.homepage-nav:hover {
+  background: linear-gradient(90deg, #ff0000, #FFB700);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.2);
+  border-color: #ffb700;
+  transition: all 0.3s ease;
+   border-image: linear-gradient(90deg, #ff0000, #FFB700);
+  border-image-slice: 1;
+  box-shadow: 0 0 10px rgba(255, 183, 0, 0.5);
+}
