@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
@@ -12,12 +11,14 @@ import CollectionPage from './component/pages/CollectionPage.jsx';
 import EventPage from './component/pages/EventPage.jsx';
 import RegisterPage from "./component/pages/RegisterPage.jsx";
 import ClientHomePage from './component/pages/Client/ClientHomePage.jsx';
+import StylistHomePage from './component/pages/Stylist/StylistHomePage.jsx';
+import AdminHomePage from './component/pages/Admin/AdminHomePage.jsx';
 
 import './App.css'
 // --- Axios Configuration ---
 axios.defaults.withCredentials = true;
 const api = axios.create({
-  baseURL: 'http://localhost:8000', 
+  baseURL: 'http://localhost:8000',
   withCredentials: true,
 });
 
@@ -30,12 +31,10 @@ function getCookie(name) {
 
 api.interceptors.request.use(
   config => {
-    // console.log('Sending request to:', config.url); // Uncomment for debugging
     const xsrfToken = getCookie('XSRF-TOKEN');
     if (xsrfToken && ['post', 'put', 'patch', 'delete'].includes(config.method)) {
       config.headers['X-XSRF-TOKEN'] = decodeURIComponent(xsrfToken);
     }
-    // console.log('Request Headers (after interceptor):', config.headers); // Uncomment for debugging
     return config;
   },
   error => {
@@ -47,14 +46,20 @@ api.interceptors.request.use(
 
 
 function App() {
-  const navigate = useNavigate(); // Now this will work!
+  const navigate = useNavigate();
 
-  // --- Authentication and User State Management ---
   const [auth, setAuth] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  // Add registerForm state
+  const [registerForm, setRegisterForm] = useState({
+    name: '', email: '', password: '', password_confirmation: '',
+    role: 'client', // Default to client
+    country: '', city: '', body_type: '', colors: '' // Client-specific fields
+  });
+
 
   const formatValidationErrors = (errors) => {
     let errorMessage = 'Validation failed: ';
@@ -100,6 +105,75 @@ function App() {
     }
   };
 
+  // Add handleRegister function
+  const handleRegister = async () => {
+    try {
+      await api.get('/sanctum/csrf-cookie');
+
+      const dataToSend = {
+        name: registerForm.name,
+        email: registerForm.email,
+        password: registerForm.password,
+        password_confirmation: registerForm.password_confirmation,
+        role: registerForm.role,
+      };
+
+      // Add client-specific fields if role is client
+      if (registerForm.role === 'client') {
+        dataToSend.country = registerForm.country;
+        dataToSend.city = registerForm.city;
+        dataToSend.body_type = registerForm.body_type;
+
+        // Convert comma-separated string to JSON string for the backend
+        const colorsArray = registerForm.colors
+            ? registerForm.colors.split(',').map(color => color.trim()).filter(color => color !== '')
+            : [];
+        dataToSend.colors = JSON.stringify(colorsArray);
+      }
+
+      const res = await api.post('/api/register', dataToSend);
+      setAuth(res.data.user);
+      setError('');
+      setSuccess('Registration successful!');
+      // Reset form after successful registration
+      setRegisterForm({ name: '', email: '', password: '', password_confirmation: '', role: 'client', country: '', city: '', body_type: '', colors: '' });
+
+      // Navigate to relevant dashboard after registration
+      if (res.data.user.role === 'client') {
+        navigate('/client-dashboard');
+      } else if (res.data.user.role === 'stylist') {
+        navigate('/stylist-dashboard');
+      } else {
+        navigate('/'); // Default fallback
+      }
+      return true;
+    } catch (err) {
+      console.error("Registration error:", err);
+      if (err.response && err.response.status === 422) {
+          setError(formatValidationErrors(err.response.data.errors));
+      } else {
+          setError('Registration failed. Please check your input.');
+      }
+      setSuccess('');
+      return false;
+    }
+  };
+
+
+  const handleLogout = async () => {
+    try {
+      await api.post('/api/logout');
+      setAuth(null);
+      setError('');
+      setSuccess('Logged out successfully.');
+      navigate('/');
+    } catch (err) {
+      console.error("Logout error:", err);
+      setError('Logout failed.');
+      setSuccess('');
+    }
+  };
+
   useEffect(() => {
     const fetchAuthenticatedUser = async () => {
       try {
@@ -122,7 +196,7 @@ function App() {
         Your browser does not support the video tag.
       </video>
 
-      <HomeNav auth={auth} /> {/* Pass auth prop to HomeNav if you want to show/hide links */}
+      <HomeNav auth={auth} handleLogout={handleLogout} />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
@@ -143,15 +217,43 @@ function App() {
         />
         <Route path="/collection" element={<CollectionPage />} />
         <Route path="/event" element={<EventPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        {/* Pass registration props to RegisterPage */}
+        <Route
+          path="/register"
+          element={<RegisterPage
+            handleRegister={handleRegister}
+            registerForm={registerForm}
+            setRegisterForm={setRegisterForm}
+            error={error}
+            setError={setError}
+            success={success}
+            setSuccess={setSuccess}
+          />}
+        />
 
+        {/* Protected Routes for Dashboards */}
         {auth && auth.role === 'client' && (
           <Route path="/client-dashboard" element={<ClientHomePage auth={auth} api={api} setError={setError} setSuccess={setSuccess} />} />
         )}
-        {/* You'll need routes for stylist and admin dashboards later */}
-         <Route
+        {auth && auth.role === 'stylist' && (
+          <Route path="/stylist-dashboard" element={<StylistHomePage auth={auth} api={api} setError={setError} setSuccess={setSuccess} />} />
+        )}
+        {auth && auth.role === 'admin' && (
+          <Route path="/admin-dashboard" element={<AdminHomePage auth={auth} api={api} setError={setError} setSuccess={setSuccess} />} />
+        )}
+
+        {/* Redirect messages for unauthenticated/unauthorized access */}
+        <Route
           path="/client-dashboard"
           element={!auth || auth.role !== 'client' ? <div className="text-center p-8 text-red-600">Please log in as a client to view this page.</div> : null}
+        />
+        <Route
+          path="/stylist-dashboard"
+          element={!auth || auth.role !== 'stylist' ? <div className="text-center p-8 text-red-600">Please log in as a stylist to view this page.</div> : null}
+        />
+        <Route
+          path="/admin-dashboard"
+          element={!auth || auth.role !== 'admin' ? <div className="text-center p-8 text-red-600">Please log in as an admin to view this page.</div> : null}
         />
         {/* Fallback for any unmatched routes */}
         <Route path="*" element={<h2 className="text-center p-8 text-red-600">404 - Page Not Found</h2>} />
