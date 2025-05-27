@@ -2,6 +2,7 @@ body{
     background-color: #1e1e1e;
     font-family: Koulen;
     color: white;
+    
 }
 
 #bg-video {
@@ -24,3 +25,4 @@ body{
     object-position: center center; 
   }
 }
+

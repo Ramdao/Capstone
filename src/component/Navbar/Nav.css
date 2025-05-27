@@ -133,7 +133,8 @@
 }
 
 .navLinks a:hover{
-    
+    scale: 1.05;
+    translate: 0px -5px;
     background: linear-gradient(90deg, #ff0000, #FFB700);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;

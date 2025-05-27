@@ -1,0 +1,27 @@
+.model-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+  width: 40vw;
+  position: absolute;
+  left: 53%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+
+}
+
+.model-container-design {
+   flex: 1; 
+   height: 100%;
+   width: 100%;
+   box-sizing: border-box;
+
+  border: 5px solid transparent; 
+  border-image: linear-gradient(90deg, #ff0000, #FFB700); 
+  border-image-slice: 1;
+
+  background: linear-gradient(90deg, rgba(217, 217, 217, 0.1), rgba(115, 115, 115, 0.15));
+  backdrop-filter: blur(20px);
+  border-radius: 10px;
+}

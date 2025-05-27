@@ -5,6 +5,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import ClothingModel from "./ClothingModel.jsx";
 import ARClothingViewer from "./ARClothingViewer";
 import { storage, ref, listAll, getDownloadURL } from "../firebase.js";
+import './Modelcontainer.css';
 
 export default function ClothViewer({ embedMode = false }) {
   const [modelFiles, setModelFiles] = useState([]);
@@ -87,7 +88,7 @@ export default function ClothViewer({ embedMode = false }) {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: embedMode ? "auto" : "130vh" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: embedMode ? "auto" : "130vh"  }}>
       {/* Model selection buttons for non-embed mode */}
       {!embedMode && (
         <div style={{ display: "flex", overflowX: "auto", padding: "2rem", background: "#333" }}>
@@ -113,10 +114,10 @@ export default function ClothViewer({ embedMode = false }) {
 
       {/* Model viewer with arrows for embed mode */}
       {embedMode ? (
-        <div style={{ display: "block", alignItems: "cneter", justifyContent: "center", height: "30vh", position:'absolute', width: "10vw", left: "70%", top: "50%", transform: "translate(-50%, -50%)", display: "flex" }}>
+        <div className="model-container">
           <button onClick={prevModel} style={arrowStyle} aria-label="Previous Model">&lt;</button>
-          <div style={{ flex: 1, height: "100%" }}>
-            <Canvas camera={{ position: [-30, 50, -20], fov: 70 }}>
+         <div className="model-container-design">
+          <Canvas  camera={{ position: [-30, 50, -20], fov: 70 }}>
               <ambientLight intensity={0.8} />
               <directionalLight position={[10, 10, 5]} />
               <Bounds fit clip observe margin={1.5}>
