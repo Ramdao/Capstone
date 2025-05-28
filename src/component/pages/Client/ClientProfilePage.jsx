@@ -40,6 +40,8 @@ export default function ClientProfilePage({
         city: auth.client.city || '',
         body_type: auth.client.body_type || '',
         colors: formattedColors,
+        message_to_stylist: auth.client.message_to_stylist || '', 
+        stylist_id: auth.client.stylist_id || '', 
        
       });
     }

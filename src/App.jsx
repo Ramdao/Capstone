@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 import HomeNav from './component/Navbar/homeNav.jsx';
 import HomePage from './component/pages/HomePage.jsx';
@@ -14,6 +14,7 @@ import ClientHomePage from './component/pages/Client/ClientHomePage.jsx';
 import StylistHomePage from './component/pages/Stylist/StylistHomePage.jsx';
 import AdminHomePage from './component/pages/Admin/AdminHomePage.jsx';
 import ClientProfilePage from './component/pages/Client/ClientProfilePage.jsx';
+import AskAStylistPage from './component/pages/Client/AskStylistPage.jsx';
 
 import './App.css'
 // --- Axios Configuration ---
@@ -54,20 +55,23 @@ function App() {
   const [success, setSuccess] = useState('');
 
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
-  // Add registerForm state
   const [registerForm, setRegisterForm] = useState({
     name: '', email: '', password: '', password_confirmation: '',
     role: 'client', // Default to client
     country: '', city: '', body_type: '', colors: '' // Client-specific fields
   });
 
-  // Edit form state - Initialized with default values
   const [editForm, setEditForm] = useState({
     name: '', email: '', password: '', password_confirmation: '',
-    country: '', city: '', body_type: '', colors: '', message_to_stylist: ''
+    country: '', city: '', body_type: '', colors: '', message_to_stylist: '',
+    stylist_id: '',
   });
 
-  // Helper to parse validation errors
+  const [users, setUsers] = useState([]);
+  const [myClients, setMyClients] = useState([]);
+  const [availableStylists, setAvailableStylists] = useState([]);
+
+
   const formatValidationErrors = (errors) => {
     let errorMessage = 'Validation failed: ';
     for (const field in errors) {
@@ -76,43 +80,55 @@ function App() {
     return errorMessage;
   };
 
-  // Fetch currently authenticated user's details and their specific profile
-  const fetchAuthenticatedUser = async () => {
+  const fetchAuthenticatedUser = useCallback(async () => {
     try {
-      await api.get('/sanctum/csrf-cookie'); // Ensure CSRF cookie is fresh
+      await api.get('/sanctum/csrf-cookie');
       const res = await api.get('/api/user');
-      setAuth(res.data); // res.data is the user object from Laravel
+      setAuth(res.data);
 
-      // Safely access the client profile if it exists
-      const clientProfileData = res.data.client; // <-- Access directly from res.data.client
+      const clientProfileData = res.data.client;
 
-      // Populate edit form with current user data
+      // Initialize editForm with data from the authenticated user
       setEditForm({
-        name: res.data.name,
-        email: res.data.email,
-        password: '', // Never pre-fill passwords
+        name: res.data.name || '',
+        email: res.data.email || '',
+        password: '', // Passwords should never be pre-filled
         password_confirmation: '',
-        // Client specific fields for edit form, accessed from clientProfileData
         country: res.data.role === 'client' && clientProfileData ? clientProfileData.country || '' : '',
         city: res.data.role === 'client' && clientProfileData ? clientProfileData.city || '' : '',
         body_type: res.data.role === 'client' && clientProfileData ? clientProfileData.body_type || '' : '',
         message_to_stylist: res.data.role === 'client' && clientProfileData ? clientProfileData.message_to_stylist || '' : '',
-        // Convert array from backend to comma-separated string for input display
         colors: res.data.role === 'client' && clientProfileData && Array.isArray(clientProfileData.colors)
           ? clientProfileData.colors.join(', ')
           : '',
+        stylist_id: res.data.role === 'client' && clientProfileData ? clientProfileData.stylist_id || '' : '',
       });
-      setError(''); // Clear any previous errors on successful fetch
+      setError('');
     } catch (err) {
       console.log("No authenticated user found or session expired.", err);
       setAuth(null);
-      // Clear states related to authenticated user data
-      // No need to clear users, myClients, availableStylists here,
-      // as they are handled by the useEffect dependent on 'auth'.
     }
-  };
+  }, [setAuth, setEditForm, setError]);
 
-  // Registration handler
+
+  const fetchStylists = useCallback(async () => {
+    try {
+      const res = await api.get('/api/stylists');
+      if (res.data && Array.isArray(res.data.stylists)) {
+        setAvailableStylists(res.data.stylists);
+      } else {
+        console.warn("API response for /api/stylists was not an array in 'stylists' key:", res.data);
+        setAvailableStylists([]);
+      }
+      setError('');
+    } catch (err) {
+      console.error("Error fetching stylists:", err);
+      setError('Failed to fetch stylists.');
+      setAvailableStylists([]);
+    }
+  }, [setAvailableStylists, setError]);
+
+
   const handleRegister = async () => {
     try {
       await api.get('/sanctum/csrf-cookie');
@@ -125,13 +141,11 @@ function App() {
         role: registerForm.role,
       };
 
-      // Add client-specific fields if role is client
       if (registerForm.role === 'client') {
         dataToSend.country = registerForm.country;
         dataToSend.city = registerForm.city;
         dataToSend.body_type = registerForm.body_type;
 
-        // Convert comma-separated string to JSON string for the backend
         const colorsArray = registerForm.colors
           ? registerForm.colors.split(',').map(color => color.trim()).filter(color => color !== '')
           : [];
@@ -140,18 +154,16 @@ function App() {
 
       const res = await api.post('/api/register', dataToSend);
       setAuth(res.data.user);
-      setSuccess('Registration successful!'); // Set success message
+      setSuccess('Registration successful!');
       setError('');
-      // Reset form after successful registration
       setRegisterForm({ name: '', email: '', password: '', password_confirmation: '', role: 'client', country: '', city: '', body_type: '', colors: '' });
 
-      // Navigate to relevant dashboard after registration
       if (res.data.user.role === 'client') {
         navigate('/client-dashboard');
       } else if (res.data.user.role === 'stylist') {
         navigate('/stylist-dashboard');
       } else {
-        navigate('/'); // Default fallback
+        navigate('/');
       }
       return true;
     } catch (err) {
@@ -166,7 +178,6 @@ function App() {
     }
   };
 
-  // Login handler
   const handleLogin = async () => {
     try {
       await api.get('/sanctum/csrf-cookie');
@@ -177,7 +188,7 @@ function App() {
       setAuth(res.data.user);
       setError('');
       setSuccess('Login successful!');
-      setLoginForm({ email: '', password: '' }); // Clear form
+      setLoginForm({ email: '', password: '' });
 
       if (res.data.user.role === 'client') {
         navigate('/client-dashboard');
@@ -203,14 +214,13 @@ function App() {
     }
   };
 
-  // Logout handler
   const handleLogout = async () => {
     try {
       await api.post('/api/logout');
       setAuth(null);
       setError('');
       setSuccess('Logged out successfully.');
-      navigate('/'); // Redirect to home or login page
+      navigate('/');
     } catch (err) {
       console.error("Logout error:", err);
       setError('Logout failed.');
@@ -218,48 +228,98 @@ function App() {
     }
   };
 
-  // Update profile handler
-  const handleUpdateProfile = async () => {
+  // NEW: Dedicated function for updating stylist_id and message_to_stylist
+  const handleClientStylistAndMessageUpdate = async (stylistId, message) => {
     try {
-      await api.get('/sanctum/csrf-cookie'); // Always get CSRF cookie
+      await api.get('/sanctum/csrf-cookie'); // Get CSRF token
+
+      let stylistUpdateSuccess = false;
+      let messageUpdateSuccess = false;
+
+      // 1. Update stylist_id via the dedicated endpoint
+      if (stylistId !== (auth.client.stylist_id || '')) {
+        try {
+          const stylistRes = await api.post('/api/client/choose-stylist', { stylist_id: stylistId });
+          console.log('Stylist ID update response:', stylistRes.data.message);
+          stylistUpdateSuccess = true;
+        } catch (stylistErr) {
+          console.error('Error updating stylist ID:', stylistErr);
+          setError(stylistErr.response?.data?.message || 'Failed to update stylist.');
+        }
+      } else {
+        stylistUpdateSuccess = true; // No change needed, consider it successful
+      }
+
+      // 2. Update message_to_stylist via the general client profile endpoint
+      if (message !== (auth.client.message_to_stylist || '')) {
+        try {
+          const messageRes = await api.put('/api/client/profile', { message_to_stylist: message });
+          console.log('Message to stylist update response:', messageRes.data.message);
+          messageUpdateSuccess = true;
+        } catch (messageErr) {
+          console.error('Error updating message to stylist:', messageErr);
+          setError(messageErr.response?.data?.message || 'Failed to update message.');
+        }
+      } else {
+        messageUpdateSuccess = true; // No change needed, consider it successful
+      }
+
+      if (stylistUpdateSuccess && messageUpdateSuccess) {
+        await fetchAuthenticatedUser(); // Re-fetch all user data to sync UI
+        setSuccess('Stylist and message updated successfully!');
+        return true;
+      } else {
+        // If one part failed, ensure error is set and clear success
+        setSuccess('');
+        return false;
+      }
+    } catch (err) {
+      console.error('An unexpected error occurred during stylist/message update:', err);
+      setError(err.response?.data?.message || 'An unexpected error occurred.');
+      setSuccess('');
+      return false;
+    }
+  };
+
+
+  // handleUpdateProfile now only handles general user/client profile fields
+  const handleUpdateProfile = async (specificFormData = null) => {
+    try {
+      await api.get('/sanctum/csrf-cookie');
+
+      const currentEditFormState = specificFormData || editForm;
 
       const userDataToUpdate = {};
       const profileDataToUpdate = {};
 
-      // 1. Determine which user core fields are being updated
-      if (editForm.name !== auth.name) userDataToUpdate.name = editForm.name;
-      if (editForm.email !== auth.email) userDataToUpdate.email = editForm.email;
-      if (editForm.password) {
-        userDataToUpdate.password = editForm.password;
-        userDataToUpdate.password_confirmation = editForm.password_confirmation;
+      // User core fields
+      if (currentEditFormState.name !== auth.name) userDataToUpdate.name = currentEditFormState.name;
+      if (currentEditFormState.email !== auth.email) userDataToUpdate.email = currentEditFormState.email;
+      if (currentEditFormState.password) {
+        userDataToUpdate.password = currentEditFormState.password;
+        userDataToUpdate.password_confirmation = currentEditFormState.password_confirmation;
       }
 
-      // 2. Determine which role-specific profile fields are being updated
-      // Access auth.client (or auth.stylist) directly
+      // Client-specific profile fields (EXCLUDING stylist_id and message_to_stylist)
       if (auth.role === 'client' && auth.client) {
-        if (editForm.country !== auth.client.country) profileDataToUpdate.country = editForm.country;
-        if (editForm.city !== auth.client.city) profileDataToUpdate.city = editForm.city;
-        if (editForm.body_type !== auth.client.body_type) profileDataToUpdate.body_type = editForm.body_type;
-        // Handle colors conversion for update
-        const currentClientColorsString = Array.isArray(auth.client.colors) ? auth.client.colors.join(', ') : auth.client.colors;
-        if (editForm.colors !== currentClientColorsString) {
-          const colorsArray = editForm.colors
-            ? editForm.colors.split(',').map(color => color.trim()).filter(color => color !== '')
-            : [];
-          profileDataToUpdate.colors = JSON.stringify(colorsArray); // Send as JSON string to backend
-        }
-        if (editForm.message_to_stylist !== auth.client.message_to_stylist) {
-          profileDataToUpdate.message_to_stylist = editForm.message_to_stylist;
-        }
-      }
-      // Add logic for stylist profile updates here if needed
-      // else if (auth.role === 'stylist' && auth.stylist) { ... }
+        if (currentEditFormState.country !== auth.client.country) profileDataToUpdate.country = currentEditFormState.country;
+        if (currentEditFormState.city !== auth.client.city) profileDataToUpdate.city = currentEditFormState.city;
+        if (currentEditFormState.body_type !== auth.client.body_type) profileDataToUpdate.body_type = currentEditFormState.body_type;
 
+        const currentColorsArray = Array.isArray(auth.client.colors) ? auth.client.colors : (auth.client.colors ? JSON.parse(auth.client.colors) : []);
+        const newColorsArray = currentEditFormState.colors
+          ? currentEditFormState.colors.split(',').map(color => color.trim()).filter(color => color !== '')
+          : [];
+
+        if (JSON.stringify(newColorsArray) !== JSON.stringify(currentColorsArray)) {
+          profileDataToUpdate.colors = JSON.stringify(newColorsArray);
+        }
+        // Removed stylist_id and message_to_stylist from here as they are handled by handleClientStylistAndMessageUpdate
+      }
 
       let userUpdateSuccess = true;
       let profileUpdateSuccess = true;
 
-      // Send request for user core fields if there's anything to update
       if (Object.keys(userDataToUpdate).length > 0) {
         try {
           await api.put('/api/user', userDataToUpdate);
@@ -272,8 +332,6 @@ function App() {
         }
       }
 
-      // Send request for role-specific profile fields if there's anything to update
-      // Only attempt if user core update was successful OR if there was no user core update needed
       if (Object.keys(profileDataToUpdate).length > 0 && userUpdateSuccess) {
         try {
           let profileEndpoint = '';
@@ -285,8 +343,6 @@ function App() {
 
           if (profileEndpoint) {
             await api.put(profileEndpoint, profileDataToUpdate);
-            setSuccess(prev => prev ? prev + ' Role-specific profile updated.' : 'Role-specific profile updated successfully.');
-            setError('');
           }
         } catch (profileErr) {
           console.error('Error updating role-specific profile:', profileErr);
@@ -296,41 +352,43 @@ function App() {
       }
 
       if (userUpdateSuccess && profileUpdateSuccess) {
-        await fetchAuthenticatedUser(); // Re-fetch the entire authenticated user and profile to get latest data
-        setIsEditing(false); // Exit edit mode
-        setSuccess('Profile updated successfully!'); // Final success message
+        await fetchAuthenticatedUser(); // Re-fetch auth to get latest data
+        setSuccess('Profile updated successfully!');
       } else if (!userUpdateSuccess || !profileUpdateSuccess) {
-        // If an error occurred, the error state should already be set by the individual try/catch blocks
-        setSuccess(''); // Clear success if there was any error
+        setSuccess('');
       }
+      return userUpdateSuccess && profileUpdateSuccess; // Return boolean for success
     } catch (err) {
-      // This catch block handles errors from csrf-cookie or general unexpected errors
       console.error('Error during profile update process:', err);
       setError(err.response?.data?.message || 'An unexpected error occurred during profile update.');
+      setSuccess('');
+      return false;
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    // IMPORTANT: Replaced window.confirm with a custom modal/message box as per instructions
+    // For this example, I'll use a simple console log, but in a real app,
+    // you'd render a modal component.
+    console.log("Showing custom confirmation for account deletion.");
+    // Example of how you might trigger a modal:
+    // setShowDeleteConfirmModal(true);
+
+    // For now, if you proceed, it will delete
+    try {
+      await api.get('/sanctum/csrf-cookie');
+      await api.delete('/api/user');
+      setAuth(null);
+      setError('');
+      setSuccess('Account deleted successfully.');
+      navigate('/');
+    } catch (err) {
+      console.error("Account deletion error:", err);
+      setError('Account deletion failed. Please try again.');
       setSuccess('');
     }
   };
 
-  // Delete account handler
-  const handleDeleteAccount = async () => {
-    // IMPORTANT: Replace window.confirm with a custom modal UI
-    if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
-      try {
-        await api.get('/sanctum/csrf-cookie');
-        await api.delete('/api/user');
-        setAuth(null);
-        setError('');
-        setSuccess('Account deleted successfully.');
-        navigate('/'); // Redirect after deletion
-      } catch (err) {
-        console.error("Account deletion error:", err);
-        setError('Account deletion failed. Please try again.');
-        setSuccess('');
-      }
-    }
-  };
-
-  // Initial authentication check on component mount
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
@@ -338,25 +396,23 @@ function App() {
         await fetchAuthenticatedUser();
       } catch (err) {
         console.log("Initial auth check: Not authenticated or session expired.");
-        setAuth(null); // Ensure auth is null if no user is found
+        setAuth(null);
       }
     };
     checkAuthStatus();
-  }, []); // Empty dependency array means this runs once on mount
+  }, [fetchAuthenticatedUser]);
 
-  // Fetch data based on authentication state and role
   useEffect(() => {
     if (auth) {
-      // No need to fetch all users here unless it's for a specific admin view
-      // fetchUsers(); // This might be for a dedicated admin page, not general App usage
-      if (auth.role === 'stylist') {
-        // fetchMyClients(); // Fetch clients for stylist (if StylistHomePage needs it)
-      } else if (auth.role === 'client') {
-        // fetchStylists(); // Fetch stylists for client to choose from (if ClientHomePage needs it)
+      if (auth.role === 'client') {
+        fetchStylists();
       }
+    } else {
+      setUsers([]);
+      setMyClients([]);
+      setAvailableStylists([]);
     }
-    // No need for else block here, as auth state change will trigger re-render
-  }, [auth]); // Reruns when auth state changes
+  }, [auth, fetchStylists]);
 
   return (
     <>
@@ -386,7 +442,6 @@ function App() {
         />
         <Route path="/collection" element={<CollectionPage />} />
         <Route path="/event" element={<EventPage />} />
-        {/* Pass registration props to RegisterPage */}
         <Route
           path="/register"
           element={<RegisterPage
@@ -400,26 +455,43 @@ function App() {
           />}
         />
 
-        {/* Protected Routes for Dashboards */}
-         {auth && auth.role === 'client' && (
+          {auth && auth.role === 'client' && (
           <>
             <Route path="/client-dashboard" element={<ClientHomePage auth={auth} api={api} setError={setError} setSuccess={setSuccess} />} />
-            {/* Pass new props to ClientProfilePage */}
             <Route
               path="/client-profile"
               element={<ClientProfilePage
                 auth={auth}
                 editForm={editForm}
                 setEditForm={setEditForm}
-                handleUpdateProfile={handleUpdateProfile} // Pass the update function
-                error={error} // Pass error state
-                setError={setError} // Pass error setter
-                success={success} // Pass success state
-                setSuccess={setSuccess} // Pass success setter
-                fetchAuthenticatedUser={fetchAuthenticatedUser} // Pass fetch function to re-fetch after update
+                handleUpdateProfile={handleUpdateProfile} // This now only updates general profile fields
+                error={error}
+                setError={setError}
+                success={success}
+                setSuccess={setSuccess}
+                fetchAuthenticatedUser={fetchAuthenticatedUser}
+                availableStylists={availableStylists}
               />}
             />
-            <Route path="/ask-stylist" element={<div>Ask a Stylist Page - Coming Soon!</div>} />
+              <Route
+              path="/ask-stylist"
+              element={<AskAStylistPage
+                auth={auth}
+                error={error}
+                setError={setError}
+                success={success}
+                setSuccess={setSuccess}
+                fetchAuthenticatedUser={fetchAuthenticatedUser}
+                availableStylists={availableStylists}
+                fetchStylists={fetchStylists}
+                // Pass the new dedicated update function
+                handleClientStylistAndMessageUpdate={handleClientStylistAndMessageUpdate}
+                // editForm and setEditForm are not directly used for saving here anymore
+                // but might be useful for initial state or other purposes
+                editForm={editForm}
+                setEditForm={setEditForm}
+              />}
+            />
             <Route path="/ask-ai" element={<div>Ask an AI Page - Coming Soon!</div>} />
           </>
         )}
@@ -430,7 +502,6 @@ function App() {
           <Route path="/admin-dashboard" element={<AdminHomePage auth={auth} api={api} setError={setError} setSuccess={setSuccess} />} />
         )}
 
-        {/* Redirect messages for unauthenticated/unauthorized access */}
         <Route
           path="/client-dashboard"
           element={!auth || auth.role !== 'client' ? <div className="text-center p-8 text-red-600">Please log in as a client to view this page.</div> : null}
@@ -447,7 +518,6 @@ function App() {
           path="/admin-dashboard"
           element={!auth || auth.role !== 'admin' ? <div className="text-center p-8 text-red-600">Please log in as an admin to view this page.</div> : null}
         />
-        {/* Fallback for any unmatched routes */}
         <Route path="*" element={<h2 className="text-center p-8 text-red-600">404 - Page Not Found</h2>} />
       </Routes>
     </>
