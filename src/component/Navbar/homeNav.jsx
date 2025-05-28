@@ -2,9 +2,51 @@ import './Nav.css';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
-export default function HomeNav() {
+// Accept auth and handleLogout as props
+export default function HomeNav({ auth, handleLogout }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const navItems = ["Home", "About", "Contact", "Login"];
+
+  // Define navigation items based on authentication status and role
+  let navItems = [];
+
+  if (auth && auth.role === 'client') {
+    // User is logged in as a client
+    navItems = [
+      { name: "Events", path: "/event" },
+      { name: "Ask a Stylist", path: "/ask-stylist" },
+      { name: "Ask an AI", path: "/ask-ai" },
+      { name: "Collection", path: "/client-dashboard" },
+      { name: "Profile", path: "/client-profile" },
+      { name: "Logout", path: "/", action: handleLogout } 
+    ];
+  } else if (auth && auth.role === 'stylist') {
+    // User is logged in as a stylist
+    navItems = [
+      { name: "Home", path: "/" },
+      { name: "Ask AI", path: "/ask-ai" },
+      { name: "Events", path: "/event" },
+      { name: "Collection", path: "/stylist-dashboard" },
+      { name: "Client list", path: "/client-list" },
+      { name: "Logout", path: "/", action: handleLogout } 
+    ];
+  } else if (auth && auth.role === 'admin') {
+    // User is logged in as an admin
+    navItems = [
+      { name: "Home", path: "/" },
+      { name: "Collections", path: "/admin-dashboard" },
+      { name: "Stylist List", path: "/all-stylist-list" }, 
+      { name: "Client List", path: "/all-client-list" },   
+      { name: "Logout", path: "/", action: handleLogout } 
+    ];
+  } else {
+    // User is not logged in (public navigation)
+    navItems = [
+      { name: "Login", path: "/login" },
+      { name: "About", path: "/about" },
+      { name: "Contact", path: "/contact" },
+      { name: "Home", path: "/" },
+    ];
+  }
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
@@ -20,14 +62,20 @@ export default function HomeNav() {
 
       {/* Navigation links */}
       <div className={`navLinks ${menuOpen ? 'open' : ''}`}>
-        {navItems.map((text) => (
+        {navItems.map((item) => (
+          
           <Link
-            key={text}
-            to={text === "Home" ? "/" : `/${text.toLowerCase()}`}
+            key={item.name}
+            to={item.path} 
             className="nav-link"
-            onClick={() => setMenuOpen(false)}
+            onClick={() => {
+              if (item.action) { // If there's an action (like logout)
+                item.action(); // Execute the action first
+              }
+              setMenuOpen(false); 
+            }}
           >
-            {text}
+            {item.name}
           </Link>
         ))}
       </div>

@@ -3,7 +3,7 @@
   margin-top: 30px;
   margin-left: 3%;
   width: 95%;
-  height: 152px;
+  height: 125px;
   display: flex;
   align-items: center;
   box-sizing: border-box;
@@ -23,7 +23,7 @@
   margin-left: 20px;
   width: 223px;
   position: relative;
-  font-size: 64px;
+  font-size: 48px;
   font-family: Koulen;
   text-align: left;
   display: inline-block;
@@ -112,14 +112,16 @@
 }
 
 .navLinks{
+  display: flex;
     background-color: transparent;
     width: 100%;
     position: relative;
     border-radius: 10px;
     height: 65px;
     cursor: pointer;
-    text-align: left;
-    font-size: 36px;
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 28px;
     font-family: Koulen;
 }
 
@@ -160,7 +162,7 @@
    
     font-size: 32px;
     overflow: hidden;
-    animation: slideFadeIn 1s ease-out forwards;
+    
    
   }
 
