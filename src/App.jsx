@@ -617,7 +617,7 @@ function App() {
           <Route path="/stylist-dashboard" element={<StylistHomePage auth={auth} api={api} setError={setError} setSuccess={setSuccess} />} />
         )}
         <Route
-          path="/stylist/clients"
+          path="/client-list"
           element={<ClientList
             auth={auth}
             myClients={myClients}
