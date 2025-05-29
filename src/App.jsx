@@ -15,6 +15,13 @@ import StylistHomePage from './component/pages/Stylist/StylistHomePage.jsx';
 import AdminHomePage from './component/pages/Admin/AdminHomePage.jsx';
 import ClientProfilePage from './component/pages/Client/ClientProfilePage.jsx';
 import AskAStylistPage from './component/pages/Client/AskStylistPage.jsx';
+import ClientList from './component/pages/Stylist/ClientList.jsx';
+import ClientDetail from './component/pages/Stylist/ClientDetail.jsx';
+import AllClientList from './component/pages/Admin/AllClientList.jsx';
+import AllStylistList from './component/pages/Admin/AllStylistList.jsx';
+import AdminClientDetail from './component/pages/Admin/AdminClientDetail.jsx';
+import AdminStylistDetail from './component/pages/Admin/AdminStylistDetail.jsx';
+
 
 import './App.css'
 // --- Axios Configuration ---
@@ -67,9 +74,13 @@ function App() {
     stylist_id: '',
   });
 
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([]); // This might become less relevant if you manage clients/stylists separately
   const [myClients, setMyClients] = useState([]);
   const [availableStylists, setAvailableStylists] = useState([]);
+
+  // NEW ADMIN STATES
+  const [allClients, setAllClients] = useState([]);
+  const [allStylists, setAllStylists] = useState([]);
 
 
   const formatValidationErrors = (errors) => {
@@ -127,6 +138,122 @@ function App() {
       setAvailableStylists([]);
     }
   }, [setAvailableStylists, setError]);
+
+  const fetchMyClients = useCallback(async () => {
+    try {
+      const res = await api.get('/api/stylist/clients');
+      setMyClients(res.data.clients);
+      setError('');
+    } catch (err) {
+      console.error("Error fetching stylist's clients:", err);
+      if (err.response && err.response.status === 403) {
+        setError('You are not authorized to view this. Only stylists can.');
+      } else {
+        setError("Failed to fetch stylist's clients.");
+      }
+      setMyClients([]); // Clear clients on error
+    }
+  }, [setMyClients, setError]);
+
+
+  // NEW ADMIN FUNCTIONS
+
+  const fetchAllClients = useCallback(async () => {
+    if (auth && auth.role === 'admin') {
+      try {
+        const res = await api.get('/api/admin/clients');
+        setAllClients(res.data.clients);
+        setError('');
+      } catch (err) {
+        console.error("Error fetching all clients:", err);
+        setError(err.response?.data?.message || 'Failed to fetch all clients.');
+        setAllClients([]);
+      }
+    }
+  }, [auth, setAllClients, setError]);
+
+  const fetchAllStylists = useCallback(async () => {
+    if (auth && auth.role === 'admin') {
+      try {
+        const res = await api.get('/api/admin/stylists');
+        setAllStylists(res.data.stylists);
+        setError('');
+      } catch (err) {
+        console.error("Error fetching all stylists:", err);
+        setError(err.response?.data?.message || 'Failed to fetch all stylists.');
+        setAllStylists([]);
+      }
+    }
+  }, [auth, setAllStylists, setError]);
+
+
+  const handleAdminEditClient = async (clientId, formData) => {
+    try {
+      await api.get('/sanctum/csrf-cookie');
+      const res = await api.put(`/api/admin/clients/${clientId}`, formData);
+      setSuccess(res.data.message || 'Client updated successfully!');
+      setError('');
+      fetchAllClients(); // Re-fetch list to update UI
+      return true;
+    } catch (err) {
+      console.error("Error updating client:", err);
+      setError(err.response?.data?.message || 'Failed to update client.');
+      setSuccess('');
+      return false;
+    }
+  };
+
+  const handleAdminDeleteClient = async (clientId) => {
+    // Implement a confirmation dialog in the component calling this function
+    try {
+      await api.get('/sanctum/csrf-cookie');
+      const res = await api.delete(`/api/admin/clients/${clientId}`);
+      setSuccess(res.data.message || 'Client deleted successfully!');
+      setError('');
+      fetchAllClients(); // Re-fetch list to update UI
+      return true;
+    } catch (err) {
+      console.error("Error deleting client:", err);
+      setError(err.response?.data?.message || 'Failed to delete client.');
+      setSuccess('');
+      return false;
+    }
+  };
+
+  const handleAdminEditStylist = async (stylistId, formData) => {
+    try {
+      await api.get('/sanctum/csrf-cookie');
+      const res = await api.put(`/api/admin/stylists/${stylistId}`, formData);
+      setSuccess(res.data.message || 'Stylist updated successfully!');
+      setError('');
+      fetchAllStylists(); // Re-fetch list to update UI
+      return true;
+    } catch (err) {
+      console.error("Error updating stylist:", err);
+      setError(err.response?.data?.message || 'Failed to update stylist.');
+      setSuccess('');
+      return false;
+    }
+  };
+
+  const handleAdminDeleteStylist = async (stylistId) => {
+    // Implement a confirmation dialog in the component calling this function
+    try {
+      await api.get('/sanctum/csrf-cookie');
+      const res = await api.delete(`/api/admin/stylists/${stylistId}`);
+      setSuccess(res.data.message || 'Stylist deleted successfully!');
+      setError('');
+      fetchAllStylists(); // Re-fetch list to update UI
+      return true;
+    } catch (err) {
+      console.error("Error deleting stylist:", err);
+      setError(err.response?.data?.message || 'Failed to delete stylist.');
+      setSuccess('');
+      return false;
+    }
+  };
+
+  // END NEW ADMIN FUNCTIONS
 
 
   const handleRegister = async () => {
@@ -228,16 +355,14 @@ function App() {
     }
   };
 
-  // NEW: Dedicated function for updating stylist_id and message_to_stylist
-  const handleClientStylistAndMessageUpdate = async (stylistId, message) => {
+  const handleClientStylistAndMessageUpdate = useCallback(async (stylistId, message) => {
     try {
-      await api.get('/sanctum/csrf-cookie'); // Get CSRF token
+      await api.get('/sanctum/csrf-cookie');
 
       let stylistUpdateSuccess = false;
       let messageUpdateSuccess = false;
 
-      // 1. Update stylist_id via the dedicated endpoint
-      if (stylistId !== (auth.client.stylist_id || '')) {
+      if (stylistId !== (auth?.client?.stylist_id || '')) {
         try {
           const stylistRes = await api.post('/api/client/choose-stylist', { stylist_id: stylistId });
           console.log('Stylist ID update response:', stylistRes.data.message);
@@ -247,11 +372,10 @@ function App() {
           setError(stylistErr.response?.data?.message || 'Failed to update stylist.');
         }
       } else {
-        stylistUpdateSuccess = true; // No change needed, consider it successful
+        stylistUpdateSuccess = true;
       }
 
-      // 2. Update message_to_stylist via the general client profile endpoint
-      if (message !== (auth.client.message_to_stylist || '')) {
+      if (message !== (auth?.client?.message_to_stylist || '')) {
         try {
           const messageRes = await api.put('/api/client/profile', { message_to_stylist: message });
           console.log('Message to stylist update response:', messageRes.data.message);
@@ -261,15 +385,14 @@ function App() {
           setError(messageErr.response?.data?.message || 'Failed to update message.');
         }
       } else {
-        messageUpdateSuccess = true; // No change needed, consider it successful
+        messageUpdateSuccess = true;
       }
 
       if (stylistUpdateSuccess && messageUpdateSuccess) {
-        await fetchAuthenticatedUser(); // Re-fetch all user data to sync UI
+        await fetchAuthenticatedUser();
         setSuccess('Stylist and message updated successfully!');
         return true;
       } else {
-        // If one part failed, ensure error is set and clear success
         setSuccess('');
         return false;
       }
@@ -279,11 +402,10 @@ function App() {
       setSuccess('');
       return false;
     }
-  };
+  }, [auth, fetchAuthenticatedUser, setError, setSuccess]);
 
 
-  // handleUpdateProfile now only handles general user/client profile fields
-  const handleUpdateProfile = async (specificFormData = null) => {
+  const handleUpdateProfile = useCallback(async (specificFormData = null) => {
     try {
       await api.get('/sanctum/csrf-cookie');
 
@@ -292,7 +414,6 @@ function App() {
       const userDataToUpdate = {};
       const profileDataToUpdate = {};
 
-      // User core fields
       if (currentEditFormState.name !== auth.name) userDataToUpdate.name = currentEditFormState.name;
       if (currentEditFormState.email !== auth.email) userDataToUpdate.email = currentEditFormState.email;
       if (currentEditFormState.password) {
@@ -300,7 +421,6 @@ function App() {
         userDataToUpdate.password_confirmation = currentEditFormState.password_confirmation;
       }
 
-      // Client-specific profile fields (EXCLUDING stylist_id and message_to_stylist)
       if (auth.role === 'client' && auth.client) {
         if (currentEditFormState.country !== auth.client.country) profileDataToUpdate.country = currentEditFormState.country;
         if (currentEditFormState.city !== auth.client.city) profileDataToUpdate.city = currentEditFormState.city;
@@ -314,7 +434,6 @@ function App() {
         if (JSON.stringify(newColorsArray) !== JSON.stringify(currentColorsArray)) {
           profileDataToUpdate.colors = JSON.stringify(newColorsArray);
         }
-        // Removed stylist_id and message_to_stylist from here as they are handled by handleClientStylistAndMessageUpdate
       }
 
       let userUpdateSuccess = true;
@@ -352,29 +471,22 @@ function App() {
       }
 
       if (userUpdateSuccess && profileUpdateSuccess) {
-        await fetchAuthenticatedUser(); // Re-fetch auth to get latest data
+        await fetchAuthenticatedUser();
         setSuccess('Profile updated successfully!');
       } else if (!userUpdateSuccess || !profileUpdateSuccess) {
         setSuccess('');
       }
-      return userUpdateSuccess && profileUpdateSuccess; // Return boolean for success
+      return userUpdateSuccess && profileUpdateSuccess;
     } catch (err) {
       console.error('Error during profile update process:', err);
       setError(err.response?.data?.message || 'An unexpected error occurred during profile update.');
       setSuccess('');
       return false;
     }
-  };
+  }, [auth, editForm, fetchAuthenticatedUser, setError, setSuccess]);
 
   const handleDeleteAccount = async () => {
-    // IMPORTANT: Replaced window.confirm with a custom modal/message box as per instructions
-    // For this example, I'll use a simple console log, but in a real app,
-    // you'd render a modal component.
     console.log("Showing custom confirmation for account deletion.");
-    // Example of how you might trigger a modal:
-    // setShowDeleteConfirmModal(true);
-
-    // For now, if you proceed, it will delete
     try {
       await api.get('/sanctum/csrf-cookie');
       await api.delete('/api/user');
@@ -406,13 +518,21 @@ function App() {
     if (auth) {
       if (auth.role === 'client') {
         fetchStylists();
+      } else if (auth.role === 'stylist') {
+        fetchMyClients();
+      } else if (auth.role === 'admin') { // NEW: Fetch all clients/stylists for admin
+        fetchAllClients();
+        fetchAllStylists();
       }
     } else {
       setUsers([]);
       setMyClients([]);
       setAvailableStylists([]);
+      setAllClients([]); // Clear admin lists on logout
+      setAllStylists([]); // Clear admin lists on logout
     }
-  }, [auth, fetchStylists]);
+  }, [auth, fetchStylists, fetchMyClients, fetchAllClients, fetchAllStylists]);
+
 
   return (
     <>
@@ -455,7 +575,7 @@ function App() {
           />}
         />
 
-          {auth && auth.role === 'client' && (
+        {auth && auth.role === 'client' && (
           <>
             <Route path="/client-dashboard" element={<ClientHomePage auth={auth} api={api} setError={setError} setSuccess={setSuccess} />} />
             <Route
@@ -464,7 +584,7 @@ function App() {
                 auth={auth}
                 editForm={editForm}
                 setEditForm={setEditForm}
-                handleUpdateProfile={handleUpdateProfile} // This now only updates general profile fields
+                handleUpdateProfile={handleUpdateProfile}
                 error={error}
                 setError={setError}
                 success={success}
@@ -473,7 +593,7 @@ function App() {
                 availableStylists={availableStylists}
               />}
             />
-              <Route
+            <Route
               path="/ask-stylist"
               element={<AskAStylistPage
                 auth={auth}
@@ -484,10 +604,7 @@ function App() {
                 fetchAuthenticatedUser={fetchAuthenticatedUser}
                 availableStylists={availableStylists}
                 fetchStylists={fetchStylists}
-                // Pass the new dedicated update function
                 handleClientStylistAndMessageUpdate={handleClientStylistAndMessageUpdate}
-                // editForm and setEditForm are not directly used for saving here anymore
-                // but might be useful for initial state or other purposes
                 editForm={editForm}
                 setEditForm={setEditForm}
               />}
@@ -495,11 +612,89 @@ function App() {
             <Route path="/ask-ai" element={<div>Ask an AI Page - Coming Soon!</div>} />
           </>
         )}
+
         {auth && auth.role === 'stylist' && (
           <Route path="/stylist-dashboard" element={<StylistHomePage auth={auth} api={api} setError={setError} setSuccess={setSuccess} />} />
         )}
+        <Route
+          path="/stylist/clients"
+          element={<ClientList
+            auth={auth}
+            myClients={myClients}
+            fetchMyClients={fetchMyClients}
+            error={error}
+            setError={setError}
+            success={success}
+            setSuccess={setSuccess}
+          />}
+        />
+        <Route
+          path="/stylist/clients/:clientId"
+          element={<ClientDetail
+            auth={auth}
+            myClients={myClients}
+            error={error}
+            setError={setError}
+            success={success}
+            setSuccess={setSuccess}
+          />}
+        />
+
         {auth && auth.role === 'admin' && (
-          <Route path="/admin-dashboard" element={<AdminHomePage auth={auth} api={api} setError={setError} setSuccess={setSuccess} />} />
+          <>
+            <Route path="/admin-dashboard" element={<AdminHomePage auth={auth} api={api} setError={setError} setSuccess={setSuccess} />} />
+            {/* NEW ADMIN ROUTES */}
+            <Route
+              path="/all-client-list"
+              element={<AllClientList
+                auth={auth}
+                allClients={allClients}
+                fetchAllClients={fetchAllClients}
+                error={error}
+                setError={setError}
+                success={success}
+                setSuccess={setSuccess}
+              />}
+            />
+            <Route
+              path="/all-stylist-list"
+              element={<AllStylistList
+                auth={auth}
+                allStylists={allStylists}
+                fetchAllStylists={fetchAllStylists}
+                error={error}
+                setError={setError}
+                success={success}
+                setSuccess={setSuccess}
+              />}
+            />
+            <Route
+              path="/admin/clients/:clientId"
+              element={<AdminClientDetail
+                auth={auth}
+                api={api}
+                error={error}
+                setError={setError}
+                success={success}
+                setSuccess={setSuccess}
+                handleAdminEditClient={handleAdminEditClient}
+                handleAdminDeleteClient={handleAdminDeleteClient}
+              />}
+            />
+            <Route
+              path="/admin/stylists/:stylistId"
+              element={<AdminStylistDetail
+                auth={auth}
+                api={api}
+                error={error}
+                setError={setError}
+                success={success}
+                setSuccess={setSuccess}
+                handleAdminEditStylist={handleAdminEditStylist}
+                handleAdminDeleteStylist={handleAdminDeleteStylist}
+              />}
+            />
+          </>
         )}
 
         <Route
@@ -518,6 +713,24 @@ function App() {
           path="/admin-dashboard"
           element={!auth || auth.role !== 'admin' ? <div className="text-center p-8 text-red-600">Please log in as an admin to view this page.</div> : null}
         />
+        {/* Fallback routes for admin lists/details if not authorized (these should ideally be handled by individual components with redirects) */}
+        <Route
+          path="/all-client-list"
+          element={!auth || auth.role !== 'admin' ? <div className="text-center p-8 text-red-600">Please log in as an admin to view the client list.</div> : null}
+        />
+        <Route
+          path="/all-stylist-list"
+          element={!auth || auth.role !== 'admin' ? <div className="text-center p-8 text-red-600">Please log in as an admin to view the stylist list.</div> : null}
+        />
+        <Route
+          path="/admin/clients/:clientId"
+          element={!auth || auth.role !== 'admin' ? <div className="text-center p-8 text-red-600">Please log in as an admin to view client details.</div> : null}
+        />
+         <Route
+          path="/admin/stylists/:stylistId"
+          element={!auth || auth.role !== 'admin' ? <div className="text-center p-8 text-red-600">Please log in as an admin to view stylist details.</div> : null}
+        />
+
         <Route path="*" element={<h2 className="text-center p-8 text-red-600">404 - Page Not Found</h2>} />
       </Routes>
     </>

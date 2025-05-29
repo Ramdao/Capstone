@@ -22,7 +22,6 @@ export default function HomeNav({ auth, handleLogout }) {
   } else if (auth && auth.role === 'stylist') {
     // User is logged in as a stylist
     navItems = [
-      { name: "Home", path: "/" },
       { name: "Ask AI", path: "/ask-ai" },
       { name: "Events", path: "/event" },
       { name: "Collection", path: "/stylist-dashboard" },
@@ -32,7 +31,7 @@ export default function HomeNav({ auth, handleLogout }) {
   } else if (auth && auth.role === 'admin') {
     // User is logged in as an admin
     navItems = [
-      { name: "Home", path: "/" },
+      
       { name: "Collections", path: "/admin-dashboard" },
       { name: "Stylist List", path: "/all-stylist-list" }, 
       { name: "Client List", path: "/all-client-list" },   
