@@ -127,24 +127,24 @@ export default function AdminStylistDetail({
           <div className="profile-details">
             <p><strong>Name:</strong> {stylist.user?.name || 'N/A'}</p>
             <p><strong>Email:</strong> {stylist.user?.email || 'N/A'}</p>
-            {/* Removed display for Experience Years and Specialties */}
+          
 
             <div className="mt-6 space-x-4">
               <button
                 onClick={() => setEditMode(true)}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                className="button-nav edit"
               >
                 Edit Account
               </button>
               <button
                 onClick={handleDelete}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                className="button-nav edit"
               >
                 Delete Account
               </button>
               <button
                 onClick={() => navigate('/all-stylist-list')}
-                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                className="button-nav edit"
               >
                 Back to All Stylists
               </button>
@@ -168,10 +168,10 @@ export default function AdminStylistDetail({
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password_confirmation">Confirm Password:</label>
               <input type="password" name="password_confirmation" id="password_confirmation" value={formData.password_confirmation} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
             </div>
-            {/* Removed form fields for Experience Years and Specialties */}
+            
             <div className="mt-6 space-x-4">
-              <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Save Changes</button>
-              <button type="button" onClick={() => setEditMode(false)} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Cancel</button>
+              <button type="submit" className="button-nav update">Save Changes</button>
+              <button type="button" onClick={() => setEditMode(false)} className="button-nav update">Cancel</button>
             </div>
           </form>
         )}

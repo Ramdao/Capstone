@@ -24,13 +24,18 @@ import AdminStylistDetail from './component/pages/Admin/AdminStylistDetail.jsx';
 
 
 import './App.css'
+
 // --- Axios Configuration ---
-axios.defaults.withCredentials = true;
+
+// 1. Create your Axios instance
 const api = axios.create({
-  baseURL: 'http://localhost:8000',
+  // baseURL: 'http://localhost:8000',
+  baseURL: 'https://aliceblue-wolverine-462272.hostingersite.com',
+  // Crucially, enable withCredentials so cookies (including XSRF-TOKEN) are sent automatically
   withCredentials: true,
 });
 
+// Helper function to get a specific cookie by name
 function getCookie(name) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
@@ -38,11 +43,20 @@ function getCookie(name) {
   return null;
 }
 
+// 2. Set up the request interceptor
+// This interceptor will read the XSRF-TOKEN cookie and set it as a header
+// for methods that require CSRF protection (POST, PUT, PATCH, DELETE).
+// GET requests generally do not need the X-XSRF-TOKEN header.
 api.interceptors.request.use(
   config => {
-    const xsrfToken = getCookie('XSRF-TOKEN');
-    if (xsrfToken && ['post', 'put', 'patch', 'delete'].includes(config.method)) {
-      config.headers['X-XSRF-TOKEN'] = decodeURIComponent(xsrfToken);
+    // Only add the X-XSRF-TOKEN header for methods that modify data
+    const methodsRequiringCsrf = ['post', 'put', 'patch', 'delete'];
+    if (methodsRequiringCsrf.includes(config.method.toLowerCase())) {
+      const xsrfToken = getCookie('XSRF-TOKEN');
+      if (xsrfToken) {
+        // Decode the token if it's URL-encoded (common with Laravel Sanctum)
+        config.headers['X-XSRF-TOKEN'] = decodeURIComponent(xsrfToken);
+      }
     }
     return config;
   },
@@ -51,6 +65,7 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
 // --- End Axios Configuration ---
 
 
@@ -93,7 +108,9 @@ function App() {
 
   const fetchAuthenticatedUser = useCallback(async () => {
     try {
-      await api.get('/sanctum/csrf-cookie');
+      // No need to call api.get('/sanctum/csrf-cookie') here directly.
+      // Laravel's Sanctum middleware will ensure the cookie is set on the first request
+      // and subsequent requests with withCredentials will include it.
       const res = await api.get('/api/user');
       setAuth(res.data);
 
@@ -189,7 +206,8 @@ function App() {
 
   const handleAdminEditClient = async (clientId, formData) => {
     try {
-      await api.get('/sanctum/csrf-cookie');
+      // No need to call api.get('/sanctum/csrf-cookie') before every modifying request.
+      // The interceptor handles adding the X-XSRF-TOKEN header if the cookie is present.
       const res = await api.put(`/api/admin/clients/${clientId}`, formData);
       setSuccess(res.data.message || 'Client updated successfully!');
       setError('');
@@ -206,7 +224,6 @@ function App() {
   const handleAdminDeleteClient = async (clientId) => {
     // Implement a confirmation dialog in the component calling this function
     try {
-      await api.get('/sanctum/csrf-cookie');
       const res = await api.delete(`/api/admin/clients/${clientId}`);
       setSuccess(res.data.message || 'Client deleted successfully!');
       setError('');
@@ -222,7 +239,6 @@ function App() {
 
   const handleAdminEditStylist = async (stylistId, formData) => {
     try {
-      await api.get('/sanctum/csrf-cookie');
       const res = await api.put(`/api/admin/stylists/${stylistId}`, formData);
       setSuccess(res.data.message || 'Stylist updated successfully!');
       setError('');
@@ -239,7 +255,6 @@ function App() {
   const handleAdminDeleteStylist = async (stylistId) => {
     // Implement a confirmation dialog in the component calling this function
     try {
-      await api.get('/sanctum/csrf-cookie');
       const res = await api.delete(`/api/admin/stylists/${stylistId}`);
       setSuccess(res.data.message || 'Stylist deleted successfully!');
       setError('');
@@ -258,6 +273,7 @@ function App() {
 
   const handleRegister = async () => {
     try {
+      // Call csrf-cookie endpoint first to ensure the XSRF-TOKEN cookie is set
       await api.get('/sanctum/csrf-cookie');
 
       const dataToSend = {
@@ -307,6 +323,7 @@ function App() {
 
   const handleLogin = async () => {
     try {
+      // Call csrf-cookie endpoint first to ensure the XSRF-TOKEN cookie is set
       await api.get('/sanctum/csrf-cookie');
       const res = await api.post('/api/login', {
         email: loginForm.email,
@@ -343,6 +360,8 @@ function App() {
 
   const handleLogout = async () => {
     try {
+      // Call csrf-cookie endpoint first to ensure the XSRF-TOKEN cookie is set
+      await api.get('/sanctum/csrf-cookie');
       await api.post('/api/logout');
       setAuth(null);
       setError('');
@@ -357,6 +376,7 @@ function App() {
 
   const handleClientStylistAndMessageUpdate = useCallback(async (stylistId, message) => {
     try {
+      // Call csrf-cookie endpoint first to ensure the XSRF-TOKEN cookie is set
       await api.get('/sanctum/csrf-cookie');
 
       let stylistUpdateSuccess = false;
@@ -407,6 +427,7 @@ function App() {
 
   const handleUpdateProfile = useCallback(async (specificFormData = null) => {
     try {
+      // Call csrf-cookie endpoint first to ensure the XSRF-TOKEN cookie is set
       await api.get('/sanctum/csrf-cookie');
 
       const currentEditFormState = specificFormData || editForm;
@@ -488,6 +509,7 @@ function App() {
   const handleDeleteAccount = async () => {
     console.log("Showing custom confirmation for account deletion.");
     try {
+      // Call csrf-cookie endpoint first to ensure the XSRF-TOKEN cookie is set
       await api.get('/sanctum/csrf-cookie');
       await api.delete('/api/user');
       setAuth(null);
@@ -504,7 +526,8 @@ function App() {
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
-        await api.get('/sanctum/csrf-cookie');
+        // No need to call api.get('/sanctum/csrf-cookie') here.
+        // The /api/user endpoint will ensure the cookie is set if it's a new session.
         await fetchAuthenticatedUser();
       } catch (err) {
         console.log("Initial auth check: Not authenticated or session expired.");
@@ -726,7 +749,7 @@ function App() {
           path="/admin/clients/:clientId"
           element={!auth || auth.role !== 'admin' ? <div className="text-center p-8 text-red-600">Please log in as an admin to view client details.</div> : null}
         />
-         <Route
+          <Route
           path="/admin/stylists/:stylistId"
           element={!auth || auth.role !== 'admin' ? <div className="text-center p-8 text-red-600">Please log in as an admin to view stylist details.</div> : null}
         />

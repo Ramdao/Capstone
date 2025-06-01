@@ -101,7 +101,7 @@ export default function ClientProfilePage({
   // Check if auth or client profile data is not available
   if (!auth || auth.role !== 'client' || !auth.client) {
     return (
-      <div className="text-center p-8 text-red-600">
+      <div>
         You are not logged in as a client, or profile data is loading.
       </div>
     );
@@ -121,7 +121,7 @@ export default function ClientProfilePage({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        Client Profile
+        Your Profile
       </motion.h1>
 
       <motion.div
@@ -133,8 +133,8 @@ export default function ClientProfilePage({
         
 
         {/* Display Error and Success Messages */}
-        {error && <div className="text-red-500 mb-4">{error}</div>}
-        {success && <div className="text-green-500 mb-4">{success}</div>}
+        {/* {error && <div className="text-red-500 mb-4">{error}</div>}
+        {success && <div className="text-green-500 mb-4">{success}</div>} */}
 
         <div className="profile-details">
           {isEditing ? (
@@ -147,7 +147,7 @@ export default function ClientProfilePage({
                   name="name"
                   value={editForm.name}
                   onChange={handleInputChange}
-                  className="w-full p-2 border rounded mt-1"
+                  
                 />
               </p>
               <p>
@@ -157,7 +157,7 @@ export default function ClientProfilePage({
                   name="email"
                   value={editForm.email}
                   onChange={handleInputChange}
-                  className="w-full p-2 border rounded mt-1"
+                  
                 />
               </p>
               {/* Optional: Add password fields for update */}
@@ -168,7 +168,7 @@ export default function ClientProfilePage({
                   name="password"
                   value={editForm.password}
                   onChange={handleInputChange}
-                  className="w-full p-2 border rounded mt-1"
+                 
                 />
               </p>
               <p>
@@ -178,7 +178,7 @@ export default function ClientProfilePage({
                   name="password_confirmation"
                   value={editForm.password_confirmation}
                   onChange={handleInputChange}
-                  className="w-full p-2 border rounded mt-1"
+                  
                 />
               </p>
 
@@ -189,17 +189,17 @@ export default function ClientProfilePage({
                   name="country"
                   value={editForm.country}
                   onChange={handleInputChange}
-                  className="w-full p-2 border rounded mt-1"
+                 
                 />
               </p>
               <p>
-                <strong>City:</strong>
+                <strong>City: </strong>
                 <input
                   type="text"
                   name="city"
                   value={editForm.city}
                   onChange={handleInputChange}
-                  className="w-full p-2 border rounded mt-1"
+                  
                 />
               </p>
               <p>
@@ -209,7 +209,7 @@ export default function ClientProfilePage({
                   name="body_type"
                   value={editForm.body_type}
                   onChange={handleInputChange}
-                  className="w-full p-2 border rounded mt-1"
+                 
                 />
               </p>
               <p>
@@ -225,18 +225,18 @@ export default function ClientProfilePage({
               </p>
               
 
-              <div className="mt-4 flex space-x-2">
-                <button
+              <div>
+                <button 
                   type="button"
                   onClick={handleSave}
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  className="button-nav update"
                 >
                   Save Changes
                 </button>
                 <button
                   type="button"
                   onClick={handleCancel}
-                  className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400"
+                  className="button-nav update"
                 >
                   Cancel
                 </button>
@@ -245,22 +245,57 @@ export default function ClientProfilePage({
           ) : (
             // View Mode: Render plain text
             <>
-              <p><strong>Name:</strong> {auth.name}</p>
-              <p><strong>Email:</strong> {auth.email}</p>
-              <p><strong>Role:</strong> {auth.role}</p>
+             <div class="user-profile-table-container">
+                  <table>
+                    <tbody>
+                      <tr>
+                        <th>Name:</th>
+                        <td>{auth.name}</td>
+                      </tr>
+                      <tr>
+                        <th>Email:</th>
+                        <td>{auth.email}</td>
+                      </tr>
+                      <tr>
+                        <th>Role:</th>
+                        <td>{auth.role}</td>
+                      </tr>
 
-              {clientProfile?.country && <p><strong>Country:</strong> {clientProfile.country}</p>}
-              {clientProfile?.city && <p><strong>City:</strong> {clientProfile.city}</p>}
-              {clientProfile?.body_type && <p><strong>Body Type:</strong> {clientProfile.body_type}</p>}
+                      {clientProfile?.country && (
+                        <tr>
+                          <th>Country:</th>
+                          <td>{clientProfile.country}</td>
+                        </tr>
+                      )}
+                      {clientProfile?.city && (
+                        <tr>
+                          <th>City:</th>
+                          <td>{clientProfile.city}</td>
+                        </tr>
+                      )}
+                      {clientProfile?.body_type && (
+                        <tr>
+                          <th>Body Type:</th>
+                          <td>{clientProfile.body_type}</td>
+                        </tr>
+                      )}
 
-              {clientColors && <p><strong>Favorite Colors:</strong> {clientColors}</p>}
+                      {clientColors && (
+                        <tr>
+                          <th>Favorite Colors:</th>
+                          <td><span class="favorite-colors-display">{clientColors}</span></td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
 
              
 
-              <div className="mt-4">
+              <div >
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                  className="button-nav edit"
                 >
                   Edit Profile
                 </button>

@@ -143,7 +143,7 @@ export default function AdminClientDetail({
       </motion.h1>
 
       <motion.div
-        className='box'
+        className='box box-edit'
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
@@ -165,25 +165,26 @@ export default function AdminClientDetail({
             <div className="mt-6 space-x-4">
               <button
                 onClick={() => setEditMode(true)}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                className="button-nav edit"
               >
                 Edit Account
               </button>
               <button
                 onClick={handleDelete}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                className="button-nav edit"
               >
                 Delete Account
               </button>
               <button
                 onClick={() => navigate('/all-client-list')}
-                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                className="button-nav edit"
               >
                 Back to All Clients
               </button>
             </div>
           </div>
         ) : (
+      
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">Name:</label>
@@ -206,7 +207,7 @@ export default function AdminClientDetail({
               <input type="text" name="country" id="country" value={formData.country} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
             </div>
             <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="city">City:</label>
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="city">City: </label>
               <input type="text" name="city" id="city" value={formData.city} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
             </div>
             <div>
@@ -221,12 +222,13 @@ export default function AdminClientDetail({
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="message_to_stylist">Message to Stylist:</label>
               <textarea name="message_to_stylist" id="message_to_stylist" value={formData.message_to_stylist} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
             </div>
-            {/* Removed stylist_id from admin edit as it's typically managed elsewhere */}
+          
             <div className="mt-6 space-x-4">
-              <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Save Changes</button>
-              <button type="button" onClick={() => setEditMode(false)} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Cancel</button>
+              <button type="submit" className="button-nav update">Save Changes</button>
+              <button type="button" onClick={() => setEditMode(false)} className="button-nav update">Cancel</button>
             </div>
           </form>
+         
         )}
       </motion.div>
     </div>

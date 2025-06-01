@@ -1,5 +1,7 @@
 
 .topNav {
+   position: relative; 
+  z-index: 10; 
   margin-top: 30px;
   margin-left: 3%;
   width: 95%;
@@ -152,6 +154,7 @@
 @media (max-width: 768px) {
     
   .topNav {
+    
     margin-top: 0px;
     width: 100%;
     margin-left:0px;
@@ -167,6 +170,7 @@
   }
 
   .burger {
+     
     display: block;
     color: white;
      position: absolute;
@@ -174,10 +178,11 @@
   }
 
   .navLinks {
+     
     display: none;
     flex-direction: column;
     position: absolute;
-    top: 120px;
+    top: 90px;
     right: 16px;
     background-color: rgba(51, 51, 51, 0.95);
     padding: 16px;
@@ -187,10 +192,12 @@
   }
 
   .navLinks.open {
+     
     display: flex;
   }
 
   .navLinks a {
+    
     font-size: 24px;
     margin: 8px 0;
     text-align: center;

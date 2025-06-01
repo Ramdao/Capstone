@@ -40,8 +40,11 @@ export default function HomePage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
         >
-          <Link className='homepage-nav' to="/collection">Full collection</Link>
-          <Link className='homepage-nav' to="/event">Event</Link>
+          <div className='buttons'>
+            <Link className='homepage-nav' to="/collection">Full collection</Link>
+            <Link className='homepage-nav' to="/event">Event</Link>
+          </div>
+          
         </motion.div>
       </motion.div>
 

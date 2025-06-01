@@ -64,9 +64,7 @@ export default function AllStylistList({
                 >
                   {stylist.user?.name || 'Stylist Name'} ({stylist.user?.email || 'No Email'})
                 </Link>
-                <p className="text-gray-600 text-sm mt-1">
-                  Specialties: {stylist.specialties || 'N/A'} | Experience: {stylist.experience_years || 'N/A'} years
-                </p>
+                
               </li>
             ))}
           </ul>
