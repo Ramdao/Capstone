@@ -107,11 +107,11 @@ export default function AskAStylistPage({
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
       >
-        <h2 className="text-xl font-bold mb-4 text-gray-800">Connect with a Stylist</h2>
+        
 
         {/* Display Error and Success Messages */}
-        {error && <div className="text-red-500 mb-4">{error}</div>}
-        {success && <div className="text-green-500 mb-4">{success}</div>}
+        {/* {error && <div className="text-red-500 mb-4">{error}</div>}
+        {success && <div className="text-green-500 mb-4">{success}</div>} */}
 
         <div className="mb-6">
           <h3 className="font-semibold text-lg mb-2">Current Stylist:</h3>

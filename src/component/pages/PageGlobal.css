@@ -185,7 +185,7 @@ select{
 }
 
 .profile-details {
-  margin-left: 10%;
+  margin-left: 5%;
 }
 
 @media (max-width: 768px) {
@@ -201,13 +201,15 @@ select{
 
   form {
     margin-left: 0;
+    
+  }
+
+  .login{
     padding: 20px;
   }
 
-  input, select {
-    width: calc(100% - 40px);
-    font-size: 24px;
-    height: 56px;
+  select{
+    width: 82vw;
   }
 
   label {
@@ -231,5 +233,9 @@ select{
   .update {
     left: 10%;
     margin-bottom: 20px;
+  }
+
+  p{
+    margin-top: 0px;
   }
 }

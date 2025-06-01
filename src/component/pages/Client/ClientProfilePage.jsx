@@ -219,7 +219,6 @@ export default function ClientProfilePage({
                   name="colors"
                   value={editForm.colors}
                   onChange={handleInputChange}
-                  className="w-full p-2 border rounded mt-1"
                   placeholder="e.g., red, blue, green"
                 />
               </p>

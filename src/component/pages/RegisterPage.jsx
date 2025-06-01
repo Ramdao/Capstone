@@ -33,7 +33,7 @@ export default function RegisterPage({ handleRegister, registerForm, setRegister
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
             >
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} className='login'>
                     {error && <p >{error}</p>}
                     {success && <p >{success}</p>}
 

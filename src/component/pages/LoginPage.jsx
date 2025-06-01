@@ -28,9 +28,9 @@ export default function LoginPage({ handleLogin, email, password, setEmail, setP
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
             >
-                <form onSubmit={handleSubmit}>
-                    {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-                    {success && <p className="text-green-500 text-sm mb-2">{success}</p>}
+                <form onSubmit={handleSubmit} className='login'>
+                    {error && <p >{error}</p>}
+                    {success && <p>{success}</p>}
 
                     <label htmlFor="email">Email</label>
                     <input
