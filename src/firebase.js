@@ -6,20 +6,19 @@ import {
   ref,
   listAll,
   getDownloadURL,
-  uploadBytesResumable 
+  uploadBytesResumable
 } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBeDq79m9z254S_jLgkT_tvvizguluId0Y",
-  authDomain: "models-a3835.firebaseapp.com",
-  projectId: "models-a3835",
-  storageBucket: "models-a3835.firebasestorage.app", 
-  messagingSenderId: "770474288991",
-  appId: "1:770474288991:web:286f4cb00a701f074ff8ea"
+ apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 
-// ✅ Export all needed Firebase Storage functions
 export { storage, ref, listAll, getDownloadURL, uploadBytesResumable };
