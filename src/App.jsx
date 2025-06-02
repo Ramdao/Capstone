@@ -27,11 +27,11 @@ import './App.css'
 
 // --- Axios Configuration ---
 
-// 1. Create your Axios instance
+//  Create Axios instance
 const api = axios.create({
   // baseURL: 'http://localhost:8000',
   baseURL: 'https://aliceblue-wolverine-462272.hostingersite.com',
-  // Crucially, enable withCredentials so cookies (including XSRF-TOKEN) are sent automatically
+  // enable withCredentials so cookies (including XSRF-TOKEN) are sent automatically
   withCredentials: true,
 });
 
@@ -43,7 +43,7 @@ function getCookie(name) {
   return null;
 }
 
-// 2. Set up the request interceptor
+// Set up the request interceptor
 // This interceptor will read the XSRF-TOKEN cookie and set it as a header
 // for methods that require CSRF protection (POST, PUT, PATCH, DELETE).
 // GET requests generally do not need the X-XSRF-TOKEN header.
@@ -79,7 +79,7 @@ function App() {
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [registerForm, setRegisterForm] = useState({
     name: '', email: '', password: '', password_confirmation: '',
-    role: 'client', // Default to client
+    role: 'client', 
     country: '', city: '', body_type: '', colors: '' // Client-specific fields
   });
 
@@ -89,11 +89,11 @@ function App() {
     stylist_id: '',
   });
 
-  const [users, setUsers] = useState([]); // This might become less relevant if you manage clients/stylists separately
+  const [users, setUsers] = useState([]); 
   const [myClients, setMyClients] = useState([]);
   const [availableStylists, setAvailableStylists] = useState([]);
 
-  // NEW ADMIN STATES
+  // ADMIN STATES
   const [allClients, setAllClients] = useState([]);
   const [allStylists, setAllStylists] = useState([]);
 
@@ -108,9 +108,7 @@ function App() {
 
   const fetchAuthenticatedUser = useCallback(async () => {
     try {
-      // No need to call api.get('/sanctum/csrf-cookie') here directly.
-      // Laravel's Sanctum middleware will ensure the cookie is set on the first request
-      // and subsequent requests with withCredentials will include it.
+      
       const res = await api.get('/api/user');
       setAuth(res.data);
 
@@ -120,7 +118,7 @@ function App() {
       setEditForm({
         name: res.data.name || '',
         email: res.data.email || '',
-        password: '', // Passwords should never be pre-filled
+        password: '', 
         password_confirmation: '',
         country: res.data.role === 'client' && clientProfileData ? clientProfileData.country || '' : '',
         city: res.data.role === 'client' && clientProfileData ? clientProfileData.city || '' : '',
@@ -206,12 +204,11 @@ function App() {
 
   const handleAdminEditClient = async (clientId, formData) => {
     try {
-      // No need to call api.get('/sanctum/csrf-cookie') before every modifying request.
-      // The interceptor handles adding the X-XSRF-TOKEN header if the cookie is present.
+      
       const res = await api.put(`/api/admin/clients/${clientId}`, formData);
       setSuccess(res.data.message || 'Client updated successfully!');
       setError('');
-      fetchAllClients(); // Re-fetch list to update UI
+      fetchAllClients(); 
       return true;
     } catch (err) {
       console.error("Error updating client:", err);
@@ -227,7 +224,7 @@ function App() {
       const res = await api.delete(`/api/admin/clients/${clientId}`);
       setSuccess(res.data.message || 'Client deleted successfully!');
       setError('');
-      fetchAllClients(); // Re-fetch list to update UI
+      fetchAllClients(); 
       return true;
     } catch (err) {
       console.error("Error deleting client:", err);
@@ -242,7 +239,7 @@ function App() {
       const res = await api.put(`/api/admin/stylists/${stylistId}`, formData);
       setSuccess(res.data.message || 'Stylist updated successfully!');
       setError('');
-      fetchAllStylists(); // Re-fetch list to update UI
+      fetchAllStylists(); 
       return true;
     } catch (err) {
       console.error("Error updating stylist:", err);
@@ -258,7 +255,7 @@ function App() {
       const res = await api.delete(`/api/admin/stylists/${stylistId}`);
       setSuccess(res.data.message || 'Stylist deleted successfully!');
       setError('');
-      fetchAllStylists(); // Re-fetch list to update UI
+      fetchAllStylists(); 
       return true;
     } catch (err) {
       console.error("Error deleting stylist:", err);
@@ -526,8 +523,7 @@ function App() {
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
-        // No need to call api.get('/sanctum/csrf-cookie') here.
-        // The /api/user endpoint will ensure the cookie is set if it's a new session.
+        
         await fetchAuthenticatedUser();
       } catch (err) {
         console.log("Initial auth check: Not authenticated or session expired.");
@@ -543,7 +539,7 @@ function App() {
         fetchStylists();
       } else if (auth.role === 'stylist') {
         fetchMyClients();
-      } else if (auth.role === 'admin') { // NEW: Fetch all clients/stylists for admin
+      } else if (auth.role === 'admin') { 
         fetchAllClients();
         fetchAllStylists();
       }
@@ -666,7 +662,7 @@ function App() {
         {auth && auth.role === 'admin' && (
           <>
             <Route path="/admin-dashboard" element={<AdminHomePage auth={auth} api={api} setError={setError} setSuccess={setSuccess} />} />
-            {/* NEW ADMIN ROUTES */}
+            {/* ADMIN ROUTES */}
             <Route
               path="/all-client-list"
               element={<AllClientList

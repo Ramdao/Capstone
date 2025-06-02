@@ -11,10 +11,9 @@ export default function AskAStylistPage({
   fetchAuthenticatedUser,
   availableStylists,
   fetchStylists,
-  // This is the new, dedicated function from App.jsx
+  
   handleClientStylistAndMessageUpdate,
-  // editForm and setEditForm are kept for consistency with App.jsx's state management,
-  // even if this component doesn't directly modify editForm for saving.
+  
   editForm,
   setEditForm
 }) {
@@ -30,14 +29,12 @@ export default function AskAStylistPage({
       setLocalSelectedStylistId(auth.client.stylist_id || '');
       setLocalMessageToStylist(auth.client.message_to_stylist || '');
     }
-    // Optional: If no stylist is currently selected, pre-select the first available stylist
-    // This provides a better UX by giving a default choice.
+    
     if (!auth?.client?.stylist_id && availableStylists && availableStylists.length > 0) {
         setLocalSelectedStylistId(availableStylists[0].id);
     }
-  }, [auth, availableStylists]); // Re-run when auth or availableStylists change
+  }, [auth, availableStylists]); // 
 
-  // Effect to fetch stylists if they haven't been loaded yet
   useEffect(() => {
     if (!availableStylists || availableStylists.length === 0) {
       fetchStylists().catch(err => {
@@ -62,13 +59,10 @@ export default function AskAStylistPage({
       );
 
       if (updateSuccessful) {
-        // If the update was successful, fetchAuthenticatedUser (called within handleClientStylistAndMessageUpdate)
-        // will refresh the global 'auth' state, which in turn updates the local state in this component
-        // via the useEffect hook above. No need for manual setEditForm here.
+
       }
     } catch (err) {
-      // Error handling is primarily done in handleClientStylistAndMessageUpdate,
-      // but this catch block is a fallback for unexpected issues.
+      
       console.error("Error during stylist/message update submission:", err);
       setError(err.response?.data?.message || 'An unexpected error occurred during update.');
     } finally {

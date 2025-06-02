@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import '../PageGlobal.css'; // Adjust path if necessary
+import '../PageGlobal.css'; 
 
 export default function AllStylistList({
   auth,

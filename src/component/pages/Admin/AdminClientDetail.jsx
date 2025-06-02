@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import '../PageGlobal.css'; // Adjust path if necessary
+import '../PageGlobal.css'; 
 
 export default function AdminClientDetail({
   auth,
@@ -29,7 +29,7 @@ export default function AdminClientDetail({
     body_type: '',
     colors: '',
     message_to_stylist: '',
-    // stylist_id: '', // Admin should probably not directly assign stylist here via profile edit
+    // stylist_id: '', // Admin should not directly assign stylist here via profile edit
   });
 
   const fetchClientDetail = async () => {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import '../PageGlobal.css'; // Adjust path if necessary
+import '../PageGlobal.css'; 
 
 export default function AdminStylistDetail({
   auth,

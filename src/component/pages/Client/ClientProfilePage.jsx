@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; // Import useEffect and useState
+import React, { useState, useEffect } from 'react'; 
 import { motion } from 'framer-motion';
 import '../PageGlobal.css';
 
@@ -8,21 +8,15 @@ export default function ClientProfilePage({
   setEditForm,
   handleUpdateProfile,
   error,
-  setError, // Add setError prop
+  setError, 
   success,
-  setSuccess, // Add setSuccess prop
-  fetchAuthenticatedUser // Add fetchAuthenticatedUser prop
+  setSuccess, 
+  fetchAuthenticatedUser 
 }) {
   // State to manage edit mode
   const [isEditing, setIsEditing] = useState(false);
 
-  // Use a local state for form fields if you want to allow edits without immediately
-  // updating the global editForm state until "Save" is clicked.
-  // For simplicity and to directly use handleUpdateProfile from App.jsx,
-  // we'll primarily use the passed editForm.
-
-  // Effect to initialize editForm when auth changes or when entering edit mode
-  // This ensures the form inputs are populated with the current, correct data.
+ 
   useEffect(() => {
     if (auth && auth.role === 'client' && auth.client) {
       // Ensure colors are properly formatted for the input field
@@ -45,7 +39,7 @@ export default function ClientProfilePage({
        
       });
     }
-  }, [auth, setEditForm]); // Re-run if auth object or setEditForm changes
+  }, [auth, setEditForm]); 
 
   // Handle input changes for the form fields
   const handleInputChange = (e) => {
@@ -64,12 +58,12 @@ export default function ClientProfilePage({
     // Call the update function from App.jsx
     await handleUpdateProfile();
 
-    // After updating, re-fetch user data to ensure the UI is fresh with the latest data
-    await fetchAuthenticatedUser(); // This will update 'auth' state in App.jsx and propagate down
+    
+    await fetchAuthenticatedUser(); 
 
     // Exit edit mode only if no error occurred after the update
-    if (!error) { // This check relies on error being set synchronously by handleUpdateProfile
-                   // A more robust check might be to check the response of handleUpdateProfile directly if it returns a boolean
+    if (!error) { 
+                   
       setIsEditing(false);
     }
   };
@@ -139,7 +133,7 @@ export default function ClientProfilePage({
         <div className="profile-details">
           {isEditing ? (
             // Edit Mode: Render input fields
-            <form onSubmit={(e) => e.preventDefault()}> {/* Prevent default form submission */}
+            <form onSubmit={(e) => e.preventDefault()}> 
               <p>
                 <strong>Name:</strong>
                 <input
@@ -160,7 +154,7 @@ export default function ClientProfilePage({
                   
                 />
               </p>
-              {/* Optional: Add password fields for update */}
+              
               <p>
                 <strong>New Password:</strong>
                 <input
@@ -242,7 +236,7 @@ export default function ClientProfilePage({
               </div>
             </form>
           ) : (
-            // View Mode: Render plain text
+            
             <>
              <div class="user-profile-table-container">
                   <table>

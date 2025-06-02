@@ -68,7 +68,7 @@ export default function HomeNav({ auth, handleLogout }) {
             to={item.path} 
             className="nav-link"
             onClick={() => {
-              if (item.action) { // If there's an action (like logout)
+              if (item.action) { 
                 item.action(); // Execute the action first
               }
               setMenuOpen(false); 
