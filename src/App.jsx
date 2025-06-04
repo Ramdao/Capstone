@@ -21,7 +21,8 @@ import AllClientList from './component/pages/Admin/AllClientList.jsx';
 import AllStylistList from './component/pages/Admin/AllStylistList.jsx';
 import AdminClientDetail from './component/pages/Admin/AdminClientDetail.jsx';
 import AdminStylistDetail from './component/pages/Admin/AdminStylistDetail.jsx';
-
+import ClientEventPage from './component/pages/Client/ClientEventPage.jsx';
+import ClientAskAIPage from './component/pages/Client/ClientAskAIPage.jsx';
 
 import './App.css'
 
@@ -29,8 +30,8 @@ import './App.css'
 
 //  Create Axios instance
 const api = axios.create({
-  // baseURL: 'http://localhost:8000',
-  baseURL: 'https://aliceblue-wolverine-462272.hostingersite.com',
+  baseURL: 'http://localhost:8000',
+  // baseURL: 'https://aliceblue-wolverine-462272.hostingersite.com',
   // enable withCredentials so cookies (including XSRF-TOKEN) are sent automatically
   withCredentials: true,
 });
@@ -628,7 +629,8 @@ function App() {
                 setEditForm={setEditForm}
               />}
             />
-            <Route path="/ask-ai" element={<div>Ask an AI Page - Coming Soon!</div>} />
+            <Route path="/ask-ai" element={<ClientAskAIPage/>} />
+            <Route path="/client-event"  element={<ClientEventPage/>} />
           </>
         )}
 

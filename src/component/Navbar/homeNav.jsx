@@ -12,7 +12,7 @@ export default function HomeNav({ auth, handleLogout }) {
   if (auth && auth.role === 'client') {
     // User is logged in as a client
     navItems = [
-      { name: "Events", path: "/event" },
+      { name: "Events", path: "/client-event" },
       { name: "Ask a Stylist", path: "/ask-stylist" },
       { name: "Ask an AI", path: "/ask-ai" },
       { name: "Collection", path: "/client-dashboard" },
