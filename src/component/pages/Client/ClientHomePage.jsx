@@ -2,10 +2,10 @@ import { Canvas } from "@react-three/fiber";
 import { Bounds, OrbitControls } from "@react-three/drei";
 import { useEffect, useState } from "react";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import ClothingModel from "../../ClothingModel.jsx"; // Ensure this path is correct
-import ARClothingViewer from "../../ARClothingViewer.jsx"; // Ensure this path is correct
-import { storage, ref, listAll, getDownloadURL } from "../../../firebase.js"; // Ensure this path is correct
-import '../../Modelcontainer.css'; // Your CSS file for styling
+import ClothingModel from "../../ClothingModel.jsx"; 
+import ARClothingViewer from "../../ARClothingViewer.jsx"; 
+import { storage, ref, listAll, getDownloadURL } from "../../../firebase.js"; 
+import '../../Modelcontainer.css'; 
 
 export default function ClientHomePage({ embedMode = true }) {
   const [availableFolders] = useState([
@@ -225,7 +225,7 @@ export default function ClientHomePage({ embedMode = true }) {
         )}
       </div>
 
-      {/* Color Pickers - RE-ENABLED */}
+      {/* Color Pickers */}
       {embedMode && ( // This ensures color pickers appear when not in embed mode
         <div style={{ padding: "1.5rem", background: "#222", borderTop: "1px solid #444", maxHeight: "30vh", overflowY: "auto" }}>
           <h3 style={{ marginBottom: "1rem", color: "#eee" }}>Customize Colors</h3>
