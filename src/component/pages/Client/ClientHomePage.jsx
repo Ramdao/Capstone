@@ -1,32 +1,88 @@
 import { Canvas } from "@react-three/fiber";
 import { Bounds, OrbitControls } from "@react-three/drei";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react"; 
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import ClothingModel from "../../ClothingModel.jsx"; 
 import ARClothingViewer from "../../ARClothingViewer.jsx"; 
 import { storage, ref, listAll, getDownloadURL } from "../../../firebase.js"; 
 import '../../Modelcontainer.css'; 
 
-export default function ClientHomePage({ embedMode = true }) {
-  const [availableFolders] = useState([
+export default function ClientHomePage({ embedMode = true, auth }) { 
+  const [availableFolders, setAvailableFolders] = useState([
     { path: "", name: "Root Folder" },
-    { path: "clients/defaultUser", name: "Default Client Models" },
-    // Add more folder paths here as needed:
-    // { path: "publicModels", name: "Public Models" },
+    { path: "publicModels", name: "Public Models" },
   ]);
 
-  const [selectedFolder, setSelectedFolder] = useState(availableFolders[0].path); // Default to the first folder
-
+  const [selectedFolder, setSelectedFolder] = useState("publicModels"); 
   const [modelFiles, setModelFiles] = useState([]);
   const [selectedModel, setSelectedModel] = useState(null);
   const [meshNames, setMeshNames] = useState([]);
   const [meshColors, setMeshColors] = useState({});
   const [isMobile, setIsMobile] = useState(false);
+  const [loadingFolders, setLoadingFolders] = useState(true);
+  const [folderError, setFolderError] = useState(null);
+
+  // Fetch only public folders and the current client's folder
+  const fetchFirebaseFolders = useCallback(async () => {
+    setLoadingFolders(true);
+    setFolderError(null);
+    try {
+      // Always include public folders
+      const publicFolders = [
+        { path: "", name: "Root Folder" },
+        { path: "publicModels", name: "Public Models" },
+      ];
+
+      // If user is authenticated as a client, add their specific folder
+      if (auth && auth.role === 'client' && auth.email) {
+        const clientFolderPath = `clients/${auth.email}/`;
+        const clientFolder = {
+          path: clientFolderPath,
+          name: `My Models (${auth.email.replace(/\./g, ' DOT ')})`
+        };
+        
+        setAvailableFolders([...publicFolders, clientFolder]);
+      } else {
+        // For unauthenticated users or non-clients, only show public folders
+        setAvailableFolders(publicFolders);
+      }
+
+    } catch (error) {
+      console.error("Error fetching Firebase folders:", error);
+      setFolderError("Failed to load folders. Please try again.");
+    } finally {
+      setLoadingFolders(false);
+    }
+  }, [auth]);
+
+  // Call fetchFirebaseFolders on component mount and when auth changes
+  useEffect(() => {
+    fetchFirebaseFolders();
+  }, [fetchFirebaseFolders]);
+
+  // Auto-select the appropriate folder based on auth status
+  useEffect(() => {
+    if (auth && auth.role === 'client' && auth.email && availableFolders.length > 0) {
+      const clientFolderPath = `clients/${auth.email}/`;
+      const foundFolder = availableFolders.find(folder => folder.path === clientFolderPath);
+      if (foundFolder) {
+        setSelectedFolder(clientFolderPath);
+      } else {
+        // Default to public models if client folder not found
+        const publicFolder = availableFolders.find(f => f.path === "publicModels");
+        setSelectedFolder(publicFolder ? publicFolder.path : availableFolders[0].path);
+      }
+    } else {
+      // For non-authenticated users, default to public models
+      const publicFolder = availableFolders.find(f => f.path === "publicModels");
+      setSelectedFolder(publicFolder ? publicFolder.path : availableFolders[0].path);
+    }
+  }, [auth, availableFolders]);
 
   // Load model URLs from Firebase based on the selected folder
   useEffect(() => {
     const fetchModels = async () => {
-      if (!selectedFolder && selectedFolder !== "") { // Handle empty string for root
+      if (!selectedFolder && selectedFolder !== "") { 
         console.warn("No folder selected to fetch models from.");
         setModelFiles([]);
         setSelectedModel(null);
@@ -39,28 +95,20 @@ export default function ClientHomePage({ embedMode = true }) {
         const folderRef = ref(storage, selectedFolder);
         const folderList = await listAll(folderRef);
 
-        console.log(`Contents of folder '${selectedFolder}':`, folderList.items.map(item => item.fullPath));
-        console.log(`Subfolders (prefixes) in '${selectedFolder}':`, folderList.prefixes.map(prefix => prefix.fullPath));
-
         const allUrls = await Promise.all(
-          folderList.items.map(item => getDownloadURL(item))
+          folderList.items
+            .filter(item => item.name.toLowerCase().endsWith('.glb') || item.name.toLowerCase().endsWith('.gltf'))
+            .map(item => getDownloadURL(item))
         );
 
-        console.log(`Fetched raw URLs from '${selectedFolder}':`, allUrls);
-
-        // --- No file type filtering here, use all fetched URLs ---
-        const filteredUrls = allUrls;
-
-        setModelFiles(filteredUrls);
-        if (filteredUrls.length > 0) {
-          setSelectedModel(filteredUrls[0]); // Set the first model in the new folder as default
-          console.log(`Displayable models from '${selectedFolder}':`, filteredUrls);
+        setModelFiles(allUrls);
+        if (allUrls.length > 0) {
+          setSelectedModel(allUrls[0]); 
         } else {
-          setSelectedModel(null); // No models in this folder
-          console.warn(`No models found in folder: '${selectedFolder}'. Check Firebase Storage paths and file types.`);
+          setSelectedModel(null); 
         }
-        setMeshNames([]); // Clear mesh names when changing folders
-        setMeshColors({}); // Clear mesh colors when changing folders
+        setMeshNames([]); 
+        setMeshColors({}); 
       } catch (error) {
         console.error(`Error fetching models from Firebase folder '${selectedFolder}':`, error);
         setModelFiles([]);
@@ -81,12 +129,11 @@ export default function ClientHomePage({ embedMode = true }) {
   // Load mesh names + set initial colors when model changes
   useEffect(() => {
     if (!selectedModel) {
-      setMeshNames([]); // Clear mesh names if no model is selected
-      setMeshColors({}); // Clear colors if no model is selected
+      setMeshNames([]); 
+      setMeshColors({}); 
       return;
     }
 
-    console.log("Attempting to load selected model for meshes:", selectedModel);
     const loader = new GLTFLoader();
     loader.load(selectedModel, (gltf) => {
       const names = [];
@@ -99,10 +146,9 @@ export default function ClientHomePage({ embedMode = true }) {
 
       const initialColors = {};
       names.forEach((name) => {
-        initialColors[name] = meshColors[name] || "#FFFFFF"; // Default to white
+        initialColors[name] = meshColors[name] || "#FFFFFF"; 
       });
       setMeshColors(initialColors);
-      console.log("Model loaded, mesh names:", names);
     }, undefined, (error) => {
       console.error("Error loading GLTF model for mesh name extraction:", error);
     });
@@ -112,7 +158,6 @@ export default function ClientHomePage({ embedMode = true }) {
     setMeshColors((prev) => ({ ...prev, [meshName]: newColor }));
   };
 
-  // Arrow button handlers for next/prev model
   const nextModel = () => {
     if (!modelFiles.length) return;
     const currentIndex = modelFiles.indexOf(selectedModel);
@@ -156,11 +201,17 @@ export default function ClientHomePage({ embedMode = true }) {
             cursor: "pointer"
           }}
         >
-          {availableFolders.map((folder, index) => (
-            <option key={index} value={folder.path}>
-              {folder.name}
-            </option>
-          ))}
+          {loadingFolders ? (
+            <option value="">Loading folders...</option>
+          ) : folderError ? (
+            <option value="">Error loading folders</option>
+          ) : (
+            availableFolders.map((folder, index) => (
+              <option key={folder.path || `root-${index}`} value={folder.path}>
+                {folder.name}
+              </option>
+            ))
+          )}
         </select>
 
         {/* Model Selection Dropdown (visible when not in embed mode) */}
@@ -226,7 +277,7 @@ export default function ClientHomePage({ embedMode = true }) {
       </div>
 
       {/* Color Pickers */}
-      {embedMode && ( // This ensures color pickers appear when not in embed mode
+      {embedMode && (
         <div style={{ padding: "1.5rem", background: "#222", borderTop: "1px solid #444", maxHeight: "30vh", overflowY: "auto" }}>
           <h3 style={{ marginBottom: "1rem", color: "#eee" }}>Customize Colors</h3>
           {meshNames.length > 0 ? (
@@ -235,7 +286,7 @@ export default function ClientHomePage({ embedMode = true }) {
                 <label style={{ marginRight: "1rem", fontSize: "1rem" }}>{name}:</label>
                 <input
                   type="color"
-                  value={meshColors[name] || "#FFFFFF"} // Default to white if no color is set
+                  value={meshColors[name] || "#FFFFFF"} 
                   onChange={(e) => handleColorChange(name, e.target.value)}
                   style={{
                     width: "60px",
