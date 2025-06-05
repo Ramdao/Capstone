@@ -52,7 +52,7 @@ export default function ClothViewer({ embedMode = false }) {
 
       const initialColors = {};
       names.forEach((name) => {
-        initialColors[name] = meshColors[name] || "#ff69b4";
+        initialColors[name] = meshColors[name] || "#FFFFFF";
       });
       setMeshColors(initialColors);
     });
