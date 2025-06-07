@@ -1,52 +1,113 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useParams, useLocation, useNavigate } from 'react-router-dom'; // Import useParams, useLocation, useNavigate
-import '../PageGlobal.css'; 
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import '../PageGlobal.css';
+
+// Import Firebase Storage functions directly
+import { storage, ref, uploadBytesResumable, getDownloadURL } from '../../../firebase.js'; 
 
 export default function ClientDetail({
   auth,
-  myClients, // Passed from App.jsx, contains all clients for the stylist
+  myClients,
   error,
   setError,
   success,
   setSuccess,
 }) {
-  const { clientId } = useParams(); // Get client ID from URL
-  const location = useLocation(); // Get location object to access state
-  const navigate = useNavigate(); // For programmatic navigation
+  const { clientId } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  // State to hold the current client's details
   const [client, setClient] = useState(null);
+
+  // --- Upload State and Handlers ---
+  const [file, setFile] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [downloadUrl, setDownloadUrl] = useState("");
+  const [uploadError, setUploadError] = useState(""); // Specific error for upload
+  const [uploadSuccess, setUploadSuccess] = useState(""); // Specific success for upload
+
+  const handleFileChange = (e) => {
+    if (e.target.files[0]) {
+      setFile(e.target.files[0]);
+      setUploadError(""); // Clear previous errors
+      setUploadSuccess(""); // Clear previous success
+    }
+  };
+
+  const handleUpload = () => {
+    if (!client || !client.user || !client.user.email) {
+      setUploadError("Client email is not available to create folder.");
+      return;
+    }
+    if (!file) {
+      setUploadError("Please select a file to upload.");
+      return;
+    }
+
+    // Determine the folder name dynamically using the client's email
+    // Replace dots with ' DOT ' if your Firebase rules or storage structure requires it
+    const clientEmailPath = client.user.email;
+    const folderName = `clients/${clientEmailPath}`;
+    
+    const path = `${folderName}/${file.name}`;
+    const storageRef = ref(storage, path);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    setUploadProgress(0);
+    setUploadError("");
+    setUploadSuccess("Upload started...");
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setUploadProgress(progress);
+      },
+      (error) => {
+        console.error("Upload error:", error);
+        setUploadError(`Upload failed: ${error.message}`);
+        setUploadSuccess(""); // Clear success message on error
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+          setDownloadUrl(url);
+          setUploadSuccess("Upload complete!");
+          setUploadError(""); // Clear error message on success
+          setFile(null); // Clear the selected file after successful upload
+          // Optionally, you might want to save this URL to the client's profile in Firestore
+          // Example: auth.updateClientProfile(client.id, { uploadedModels: [...client.uploadedModels, url] });
+        });
+      }
+    );
+  };
+  // --- End Upload State and Handlers ---
 
   useEffect(() => {
     setError('');
     setSuccess('');
 
     if (!auth || auth.role !== 'stylist') {
-      // Redirect or show error if not authorized
       navigate('/stylist-dashboard', { replace: true });
       setError('Unauthorized access to client details.');
       return;
     }
 
-    // Attempt to get client from location state first (passed from ClientList)
     if (location.state && location.state.client) {
       setClient(location.state.client);
     } else if (myClients && myClients.length > 0) {
-      // If not in state, try to find it in the myClients array (from App.jsx)
       const foundClient = myClients.find(c => c.id.toString() === clientId);
       if (foundClient) {
         setClient(foundClient);
       } else {
         setError('Client not found in your assigned clients.');
-        setClient(null); // Clear client if not found
+        setClient(null);
       }
     } else {
-      // Fallback if myClients is empty or not yet loaded
       setError('Client data not available. Please go back to client list and try again.');
       setClient(null);
     }
-  }, [clientId, location.state, myClients, auth, navigate, setError, setSuccess]); // Add dependencies
+  }, [clientId, location.state, myClients, auth, navigate, setError, setSuccess]);
 
   if (!client) {
     return (
@@ -56,7 +117,6 @@ export default function ClientDetail({
     );
   }
 
-  // Format colors for display
   const clientColors = Array.isArray(client.colors)
     ? client.colors.join(', ')
     : client.colors || 'N/A';
@@ -89,7 +149,41 @@ export default function ClientDetail({
           <p><strong>Body Type:</strong> {client.body_type || 'N/A'}</p>
           <p><strong>Favorite Colors:</strong> {clientColors}</p>
           <p><strong>Message to Stylist:</strong> {client.message_to_stylist || 'No message'}</p>
-          {/* You can add more client-specific details here */}
+          {/* Add more client-specific details here */}
+
+          {/* --- Upload Section for Stylists --- */}
+          {auth && auth.role === 'stylist' && client.user?.email && (
+            <div className="mt-8 p-4 border border-gray-300 rounded-lg bg-gray-50">
+              <h4 className="text-lg font-semibold mb-3">Upload Model for Client ({client.user.email})</h4>
+              
+              <input 
+                type="file" 
+                accept=".glb" 
+                onChange={handleFileChange} 
+                className="mb-3 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+              
+              <button 
+                onClick={handleUpload} 
+                className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!file} // Disable button if no file is selected
+              >
+                Upload {file ? file.name : '.glb File'}
+              </button>
+
+              {uploadProgress > 0 && uploadProgress < 100 && (
+                <div className="mt-3 text-sm text-gray-700">Upload Progress: {uploadProgress.toFixed(0)}%</div>
+              )}
+              {uploadError && <div className="mt-3 text-sm text-red-600">{uploadError}</div>}
+              {uploadSuccess && <div className="mt-3 text-sm text-green-600">{uploadSuccess}</div>}
+              {downloadUrl && (
+                <p className="mt-3 text-sm text-gray-800">
+                  File URL: <a href={downloadUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">{downloadUrl}</a>
+                </p>
+              )}
+            </div>
+          )}
+          {/* --- End Upload Section --- */}
 
           <div className="mt-6">
             <button

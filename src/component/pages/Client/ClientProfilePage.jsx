@@ -17,29 +17,45 @@ export default function ClientProfilePage({
   const [isEditing, setIsEditing] = useState(false);
 
  
-  useEffect(() => {
-    if (auth && auth.role === 'client' && auth.client) {
-      // Ensure colors are properly formatted for the input field
-      const formattedColors = Array.isArray(auth.client.colors)
-        ? auth.client.colors.join(', ')
-        : auth.client.colors || '';
-
-      setEditForm({
-        name: auth.name || '',
-        email: auth.email || '',
-        // password and password_confirmation should generally not be pre-filled for security
-        password: '',
-        password_confirmation: '',
-        country: auth.client.country || '',
-        city: auth.client.city || '',
-        body_type: auth.client.body_type || '',
-        colors: formattedColors,
-        message_to_stylist: auth.client.message_to_stylist || '', 
-        stylist_id: auth.client.stylist_id || '', 
-       
-      });
+ useEffect(() => {
+  if (auth && auth.role === 'client' && auth.client) {
+    // Parse colors correctly from whatever format they might be in
+    let colorsArray = [];
+    
+    try {
+      // Handle different possible formats
+      if (Array.isArray(auth.client.colors)) {
+        colorsArray = auth.client.colors;
+      } else if (typeof auth.client.colors === 'string') {
+        // Try to parse as JSON if it's a string
+        const parsed = JSON.parse(auth.client.colors);
+        colorsArray = Array.isArray(parsed) ? parsed : [parsed].filter(Boolean);
+      }
+    } catch (e) {
+      // If parsing fails, treat as comma-separated string
+      colorsArray = auth.client.colors.split(',').map(c => c.trim()).filter(Boolean);
     }
-  }, [auth, setEditForm]); 
+    
+    // Clean up each color string
+    colorsArray = colorsArray.map(color => {
+      // Remove any extra quotes or brackets
+      return color.replace(/^["'\[\\]+|["'\]\\]+$/g, '');
+    }).filter(Boolean);
+
+        setEditForm({
+      name: auth.name || '',
+      email: auth.email || '',
+      password: '',
+      password_confirmation: '',
+      country: auth.client.country || '',
+      city: auth.client.city || '',
+      body_type: auth.client.body_type || '',
+      colors: colorsArray.join(', '), 
+      message_to_stylist: auth.client.message_to_stylist || '', 
+      stylist_id: auth.client.stylist_id || '', 
+    });
+  }
+}, [auth, setEditForm]);
 
   // Handle input changes for the form fields
   const handleInputChange = (e) => {
@@ -50,23 +66,38 @@ export default function ClientProfilePage({
     }));
   };
 
-  const handleSave = async () => {
-    // Clear any previous error/success messages before attempting save
-    setError('');
-    setSuccess('');
+ const handleSave = async () => {
+  setError('');
+  setSuccess('');
 
-    // Call the update function from App.jsx
-    await handleUpdateProfile();
+  // Process colors before saving
+  const colorsToSave = editForm.colors
+    .split(',')
+    .map(c => c.trim())
+    .filter(Boolean)
+    .map(color => {
+      // Ensure color starts with # and is valid
+      if (!color.startsWith('#')) {
+        color = `#${color}`;
+      }
+      // Remove any extra quotes
+      return color.replace(/^["']+|["']+$/g, '');
+    });
 
-    
-    await fetchAuthenticatedUser(); 
-
-    // Exit edit mode only if no error occurred after the update
-    if (!error) { 
-                   
-      setIsEditing(false);
-    }
+  // Create the update data with properly formatted colors
+  const updateData = {
+    ...editForm,
+    colors: JSON.stringify(colorsToSave) // Store as JSON string
   };
+
+  // Call the update function with the processed data
+  await handleUpdateProfile(updateData);
+  await fetchAuthenticatedUser();
+  
+  if (!error) {
+    setIsEditing(false);
+  }
+};
 
   const handleCancel = () => {
     // Reset the form fields to the original auth data

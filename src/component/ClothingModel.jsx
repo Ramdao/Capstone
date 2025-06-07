@@ -25,8 +25,6 @@ const getVariedColor = (baseColorHex, meshName) => {
   // Create a consistent pseudo-random number generator for this specific mesh and base color.
   const random = mulberry32(`${baseColorHex}-${meshName}`);
 
-  // --- Aggressive Variance Adjustments ---
-
   // Lightness (L) variation: Increased range for more pronounced shading.
   // Now from -0.3 to +0.3 (previous was -0.2 to +0.2)
   const lightnessVariation = (random() * 0.6) - 0.3;
@@ -51,6 +49,42 @@ const getVariedColor = (baseColorHex, meshName) => {
   return variedColor; // Return the new, varied Three.js Color object
 };
 
+// // Helper function to generate more dramatic color variations while maintaining harmony
+// const getVariedColor = (baseColorHex, meshName) => {
+//   const baseColor = new THREE.Color(baseColorHex);
+//   const hsl = {};
+//   baseColor.getHSL(hsl);
+
+//   // Create a consistent but more varied random number generator
+//   const random = mulberry32(`${baseColorHex}-${meshName}`);
+  
+//   // More aggressive variation parameters
+//   const hueRange = 0.05; // Increased from 0.02 - allows for more noticeable hue shifts
+//   const saturationRange = 0.5; // Increased from 0.3 - allows for both very muted and very saturated
+//   const lightnessRange = 0.4; // Increased from 0.3 - allows for both very dark and very light
+  
+//   // Apply variations with more dramatic ranges
+//   hsl.h = (hsl.h + (random() * hueRange * 2 - hueRange + 1)) % 1;
+//   hsl.s = Math.max(0.1, Math.min(0.9, hsl.s + (random() * saturationRange * 2 - saturationRange)));
+//   hsl.l = Math.max(0.1, Math.min(0.9, hsl.l + (random() * lightnessRange * 2 - lightnessRange)));
+
+//   // Add an additional "personality" factor based on mesh name
+//   const personalityFactor = meshName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  
+//   // Apply personality factor to make certain meshes stand out more
+//   if (personalityFactor % 3 === 0) {
+//     hsl.h = (hsl.h + 0.03) % 1; // Slight extra hue shift
+//   } else if (personalityFactor % 5 === 0) {
+//     hsl.s = Math.min(0.95, hsl.s * 1.3); // Boost saturation
+//   } else if (personalityFactor % 7 === 0) {
+//     hsl.l = Math.min(0.95, hsl.l * 1.4); // Boost lightness
+//   }
+
+//   const variedColor = new THREE.Color();
+//   variedColor.setHSL(hsl.h, hsl.s, hsl.l);
+  
+//   return variedColor;
+// };
 
 // Function component for rendering and coloring the 3D clothing model
 function ClothingModel({ modelPath, meshColors, uniformColor }) {
@@ -101,8 +135,8 @@ function ClothingModel({ modelPath, meshColors, uniformColor }) {
 
   }, [scene, meshColors, uniformColor]);
 
-  // It's good practice to clone the scene if you're modifying its materials or expecting multiple instances,
-  // to avoid modifying the original loaded GLTF asset shared across components.
+  
+  
   const clonedScene = useMemo(() => {
     if (scene) {
         const cloned = scene.clone();
