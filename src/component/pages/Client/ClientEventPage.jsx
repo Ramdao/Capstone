@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import '../PageGlobal.css'; // Assuming this CSS provides general page styling
+import '../PageGlobal.css'; 
 import { fetchCurrentWeather } from '../../../weatherApi'; // Your weather API utility
 import { fetchCalendarEvents } from '../../../calendarApi'; // Your calendar API utility
 
@@ -26,7 +26,7 @@ export default function ClientEventPage({ auth }) {
     const [weatherLoading, setWeatherLoading] = useState(false);
     const [weatherError, setWeatherError] = useState(null);
     // Initialize city and countryCode from auth prop or use defaults
-    // Note: Weather API typically uses 2-letter country codes, so keep this for weather
+    
     const [city, setCity] = useState(auth?.client?.city || 'Toronto');
     const [countryCode, setCountryCode] = useState(auth?.client?.country || 'CA');
     const [units, setUnits] = useState('metric'); // Default units for weather
