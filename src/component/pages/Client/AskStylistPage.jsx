@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'; // Ensure useState and useEffect are imported
 import { motion } from 'framer-motion';
 import '../PageGlobal.css';
-
+import "./Askstylist.css"
 export default function AskAStylistPage({
   auth,
   error,
@@ -73,7 +73,7 @@ export default function AskAStylistPage({
   // Display a loading/unauthorized message if client data isn't ready
   if (!auth || auth.role !== 'client' || !auth.client) {
     return (
-      <div className="text-center p-8 text-red-600">
+      <div >
         Please log in as a client to access this page, or profile data is loading.
       </div>
     );
@@ -96,7 +96,7 @@ export default function AskAStylistPage({
       </motion.h1>
 
       <motion.div
-        className='box'
+        className='box-askstylist'
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
@@ -107,28 +107,23 @@ export default function AskAStylistPage({
         {/* {error && <div className="text-red-500 mb-4">{error}</div>}
         {success && <div className="text-green-500 mb-4">{success}</div>} */}
 
-        <div className="mb-6">
-          <h3 className="font-semibold text-lg mb-2">Current Stylist:</h3>
+        <div className='stylist-info'>
+          <h2>Current Stylist:</h2>
           {currentStylist ? (
-            <div className="bg-gray-100 p-4 rounded-lg">
-              <p className="font-medium">{currentStylist.user?.name}</p>
-              <p className="text-gray-600">{currentStylist.user?.email}</p>
-              {auth.client.message_to_stylist && (
-                <div className="mt-2">
-                  <p className="font-medium">Your Message:</p>
-                  <p className="text-gray-600">{auth.client.message_to_stylist}</p>
-                </div>
-              )}
+            <div >
+              <p >{currentStylist.user?.name}</p>
+              <p >{currentStylist.user?.email}</p>
+             
             </div>
           ) : (
-            <p className="text-gray-500">You haven't selected a stylist yet.</p>
+            <p>You haven't selected a stylist yet.</p>
           )}
         </div>
 
         {/* Form for choosing a stylist and sending a message */}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="stylist-select" className="block text-gray-700 text-sm font-bold mb-2">
+        <form onSubmit={handleSubmit} className='stylist-select-container'>
+          <div >
+            <label htmlFor="stylist-select">
               Choose a Stylist:
             </label>
             <select
@@ -161,10 +156,10 @@ export default function AskAStylistPage({
             />
           </div>
 
-          <div className="flex items-center justify-between">
+          <div>
             <button
               type="submit"
-              className={`bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 focus:outline-none focus:shadow-outline ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className="nav"
               disabled={isLoading}
             >
               {isLoading ? 'Saving...' : 'Save Changes'}

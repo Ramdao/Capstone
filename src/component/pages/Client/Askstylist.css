@@ -1,0 +1,69 @@
+.stylist-select-container {
+    
+  position: absolute;
+  top:30%
+}
+.nav{
+
+text-decoration: none;
+cursor: pointer;
+margin-top: 20px;
+display: flex;
+justify-content: center;
+font-family: Koulen;
+font-size: 32px;
+color:white;
+ width: 30%;
+position: relative;
+background-color: #000;
+border: 1px solid #fff;
+box-sizing: border-box;
+height: 56px;
+transition: all 0.3s ease;
+}
+
+.nav:hover {
+  background: linear-gradient(90deg, #ff0000, #FFB700);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.2);
+  border-color: #ffb700;
+  transition: all 0.3s ease;
+   border-image: linear-gradient(90deg, #ff0000, #FFB700);
+  border-image-slice: 1;
+  box-shadow: 0 0 10px rgba(255, 183, 0, 0.5);
+}
+
+.stylist-info{
+    margin-top: 10px;
+    margin-left: 50px;
+    position: absolute;
+    top:10%
+}
+
+.stylist-info p{
+    margin-top: -10px;
+    margin-bottom: -10px;
+}
+
+textarea{
+    width: 93%;
+    height: 100px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    resize: none;
+}
+
+.box-askstylist {
+  display: flex;
+  justify-content: left;
+  width: 95%;
+  min-height: 95vh;
+  border: 5px solid transparent; 
+  border-image: linear-gradient(90deg, #ff0000, #FFB700); 
+  border-image-slice: 1;
+  background: linear-gradient(90deg, rgba(217, 217, 217, 0.1), rgba(115, 115, 115, 0.15));
+  backdrop-filter: blur(20px);
+  border-radius: 10px;
+}

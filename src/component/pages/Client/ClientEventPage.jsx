@@ -162,7 +162,7 @@ export default function ClientEventPage({ auth }) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
                 >
-                    Client Dashboard
+                    Upcoming Events
                 </motion.h1>
 
                

@@ -1,0 +1,323 @@
+/* src/pages/Client/ClientAskAIPage.css */
+
+/* General page layout and background */
+.client-ai-page-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 1rem;
+   border: 5px solid transparent; 
+  border-image: linear-gradient(90deg, #ff0000, #FFB700); 
+  border-image-slice: 1;
+  background: linear-gradient(90deg, rgba(217, 217, 217, 0.1), rgba(115, 115, 115, 0.15));
+  backdrop-filter: blur(20px);
+  border-radius: 10px;
+  margin-top: 20px;
+    width: 90%;
+    min-height: 100vh;
+    position:absolute;
+    left:6%;
+    box-sizing: border-box; /* Ensure padding is included in height */
+}
+
+/* Page Header */
+.client-ai-page-layout h1 {
+    font-size: 3.5rem;
+    font-family: 'Koulen', sans-serif; /* Assuming Koulen is a custom font */
+    color: #f0f0f0;
+    margin-bottom: 0.5rem;
+    text-align: center;
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 10px rgba(255, 183, 0, 0.3); /* Subtle glow */
+}
+
+.client-ai-page-layout p {
+    font-size: 1.2rem;
+    color: #bbb;
+    margin-bottom: 3rem;
+    text-align: center;
+    max-width: 800px;
+}
+
+/* Main Content Grid */
+.ai-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr; /* Left column narrower, right wider */
+    gap: 3rem;
+    align-items: start;
+    width: 100%;
+    max-width: 1400px; /* Max width for the content area */
+    margin-top: 2rem;
+}
+
+/* Left Column - AI Controls */
+.ai-controls-column {
+    background: linear-gradient(135deg, rgba(217, 217, 217, 0.05), rgba(115, 115, 115, 0.08));
+    backdrop-filter: blur(15px);
+    border-radius: 15px;
+    padding: 2.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+.ai-controls-column h2 {
+    font-size: 1.8rem;
+    color: #f0f0f0;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ai-controls-column h2 span {
+    font-size: 2.2rem; /* Larger number */
+    font-weight: bold;
+}
+
+/* Input Field */
+.ai-color-input {
+    width: calc(100% - 20px); /* Adjust for padding */
+    padding: 12px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ai-color-input::placeholder {
+    color: #999;
+}
+
+.ai-color-input:focus {
+    outline: none;
+    border-color: #4dabf7;
+    box-shadow: 0 0 8px rgba(77, 171, 247, 0.5);
+}
+
+/* Button Styling */
+.ai-button {
+    padding: 12px 25px;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(90deg, #ff0000, #FFB700); /* Gradient from provided CSS */
+    color: #1a1a1a; /* Dark text for contrast */
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.ai-button:disabled {
+    background: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.ai-button:not(:disabled):hover {
+    box-shadow: 0 0 15px rgba(255, 183, 0, 0.7);
+    transform: translateY(-2px);
+}
+
+/* Loading spinner */
+.ai-spinner {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid #4dabf7;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Generated Color Display */
+.generated-color-display {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.color-swatch {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    border: 2px solid #ccc;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.color-details p {
+    margin: 0.3rem 0;
+    font-size: 1.1rem;
+    color: #eee;
+}
+
+.color-status-message {
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: #f8f8f8;
+    text-align: center;
+}
+
+/* Right Column - Model Viewer Container */
+.model-viewer-column {
+    position: relative; /* For positioning arrows */
+    background: linear-gradient(135deg, rgba(217, 217, 217, 0.05), rgba(115, 115, 115, 0.08));
+    backdrop-filter: blur(15px);
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 600px; 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    overflow: hidden; 
+}
+
+.model-viewer-canvas-wrapper {
+    width: 100%;
+    height: 100%;
+    position: absolute; 
+    top: 0;
+    left: 0;
+}
+
+
+.model-status-message {
+    padding: 2rem;
+    text-align: center;
+    font-size: 1.2rem;
+    color: #ccc;
+}
+
+.model-status-message .ai-spinner {
+    margin-bottom: 1rem;
+}
+
+/* Navigation Arrows */
+.model-nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.4);
+    border: none;
+    font-size: 2.5rem;
+    color: white;
+    cursor: pointer;
+    z-index: 10; 
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    user-select: none;
+    backdrop-filter: blur(5px);
+}
+
+.model-nav-button:hover {
+    background: rgba(0, 0, 0, 0.6);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.model-nav-button.prev {
+    left: 20px;
+}
+
+.model-nav-button.next {
+    right: 20px;
+}
+
+.model-index-display {
+    position: absolute;
+    bottom: 20px;
+    color: #ccc;
+    font-size: 1rem;
+    background-color: rgba(0,0,0,0.5);
+    padding: 8px 15px;
+    border-radius: 20px;
+    z-index: 5; 
+}
+
+
+@media (max-width: 1024px) {
+    .ai-content-grid {
+        grid-template-columns: 1fr; 
+        gap: 3rem;
+        padding: 0 1rem;
+    }
+
+    .model-viewer-column {
+        min-height: 400px; 
+    }
+
+    .client-ai-page-layout h1 {
+        font-size: 2.8rem;
+    }
+
+    .client-ai-page-layout p {
+        font-size: 1rem;
+    }
+
+    .ai-controls-column, .model-viewer-column {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .client-ai-page-layout {
+        padding: 2rem 0.5rem;
+    }
+
+    .client-ai-page-layout h1 {
+        font-size: 2.2rem;
+    }
+
+    .client-ai-page-layout p {
+        font-size: 0.9rem;
+    }
+
+    .ai-controls-column h2 {
+        font-size: 1.5rem;
+    }
+
+    .ai-controls-column h2 span {
+        font-size: 1.8rem;
+    }
+
+    .ai-button {
+        font-size: 1rem;
+        padding: 10px 20px;
+    }
+
+    .model-nav-button {
+        font-size: 2rem;
+        width: 45px;
+        height: 45px;
+    }
+
+    .model-nav-button.prev {
+        left: 10px;
+    }
+
+    .model-nav-button.next {
+        right: 10px;
+    }
+}

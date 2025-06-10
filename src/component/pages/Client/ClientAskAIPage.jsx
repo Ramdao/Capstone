@@ -2,11 +2,11 @@
 import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { Canvas } from "@react-three/fiber";
-import { Bounds, OrbitControls, useGLTF } from "@react-three/drei";
-import * as THREE from 'three';
+import { Bounds, OrbitControls } from "@react-three/drei"; 
+import * as THREE from 'three'; 
 
-import '../PageGlobal.css';
-import '../../Modelcontainer.css'; 
+import '../PageGlobal.css'; 
+import './ClientAskAIPage.css'; 
 import ClothingModel from '../../ClothingModel.jsx'; 
 import { storage, ref, listAll, getDownloadURL } from '../../../firebase.js'; 
 import { AuthContext } from '../../../AuthContext'; 
@@ -157,7 +157,7 @@ export default function ClientAskAIPage() {
                 try {
                     colorsArray = JSON.parse(currentColors);
                     if (!Array.isArray(colorsArray)) {
-                         colorsArray = currentColors.split(',').map(c => c.trim()).filter(Boolean);
+                        colorsArray = currentColors.split(',').map(c => c.trim()).filter(Boolean);
                     }
                 } catch (parseError) {
                     colorsArray = currentColors.split(',').map(c => c.trim()).filter(Boolean);
@@ -197,114 +197,43 @@ export default function ClientAskAIPage() {
         setSelectedModel(modelFiles[prevIndex]);
     };
 
-    const arrowStyle = {
-        background: "rgba(0,0,0,0.3)",
-        border: "none",
-        fontSize: "2rem",
-        color: "white",
-        cursor: "pointer",
-        zIndex: 2,
-        userSelect: "none",
-        width: "50px",
-        height: "50px",
-        borderRadius: "50%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backdropFilter: "blur(5px)",
-        transition: "all 0.3s ease",
-    };
+    // Note: arrowStyle is now handled by CSS classes for better maintainability
 
     return (
-        <div className="pagelayout" style={{ 
-            backgroundColor: "#1a1a1a", 
-            color: "white", 
-            minHeight: "100vh",
-            padding: "2rem",
-            maxWidth: "1400px",
-            margin: "0 auto"
-        }}>
+        <div className="client-ai-page-layout">
             {/* Header Section */}
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                style={{ 
-                    textAlign: 'center', 
-                    marginBottom: '2rem',
-                    paddingBottom: '1rem',
-                    borderBottom: '1px solid rgba(255,255,255,0.1)'
-                }}
             >
-                <h1 style={{ 
-                    fontSize: '2.5rem', 
-                    fontWeight: '600', 
-                    marginBottom: '0.5rem',
-                    background: 'linear-gradient(90deg, #ffffff, #aaaaaa)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent'
-                }}>
+                <h1>
                     AI Color Generator
                 </h1>
-                <p style={{ 
-                    fontSize: '1.1rem', 
-                    color: '#aaa',
-                    maxWidth: '700px',
-                    margin: '0 auto'
-                }}>
-                    Describe your ideal color and see it applied to your 3D model in real-time
+                <p>
+                    Describe your ideal color and see it applied to your 3D model in real-time.
                 </p>
             </motion.div>
 
             {/* Main Content Grid */}
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1.5fr',
-                gap: '2rem',
-                alignItems: 'start'
-            }}>
+            <div className="ai-content-grid">
                 {/* Left Column - AI Controls */}
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2, duration: 0.5 }}
-                    style={{ 
-                        background: 'linear-gradient(145deg, #222222, #1a1a1a)',
-                        borderRadius: '12px',
-                        padding: '2rem',
-                        boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-                        height: '100%'
-                    }}
+                    className="ai-controls-column"
                 >
                     <div style={{ marginBottom: '2rem' }}>
-                        <h2 style={{ 
-                            fontSize: '1.5rem', 
-                            marginBottom: '1rem',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.5rem'
-                        }}>
-                            <span style={{ color: '#4dabf7' }}>1.</span> Describe Your Color
+                        <h2>
+                            Describe Your Color
                         </h2>
                         <input
                             type="text"
                             value={colorPrompt}
                             onChange={(e) => setColorPrompt(e.target.value)}
                             placeholder="e.g., 'sunset orange', 'deep ocean blue', 'earthy green'"
-                            style={{
-                                padding: '12px 16px',
-                                borderRadius: '8px',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                width: '100%',
-                                marginBottom: '1rem',
-                                fontSize: '1em',
-                                background: 'rgba(255,255,255,0.05)',
-                                color: 'white',
-                                transition: 'all 0.3s ease',
-                                outline: 'none'
-                            }}
-                            onFocus={(e) => e.target.style.borderColor = '#4dabf7'}
-                            onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                            className="ai-color-input"
                         />
                         
                         <motion.button
@@ -312,30 +241,11 @@ export default function ClientAskAIPage() {
                             disabled={loading}
                             whileHover={{ scale: 1.03 }}
                             whileTap={{ scale: 0.97 }}
-                            style={{
-                                padding: '12px 24px',
-                                background: 'linear-gradient(90deg, #4dabf7, #339af0)',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '8px',
-                                cursor: 'pointer',
-                                fontSize: '1em',
-                                fontWeight: '500',
-                                width: '100%',
-                                transition: 'all 0.3s ease',
-                                opacity: loading ? 0.7 : 1
-                            }}
+                            className="ai-button"
                         >
                             {loading ? (
                                 <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                                    <div style={{ 
-                                        width: '16px', 
-                                        height: '16px', 
-                                        border: '2px solid rgba(255,255,255,0.3)',
-                                        borderTopColor: 'white',
-                                        borderRadius: '50%',
-                                        animation: 'spin 1s linear infinite'
-                                    }}></div>
+                                    <div className="ai-spinner"></div>
                                     Generating...
                                 </span>
                             ) : (
@@ -349,48 +259,22 @@ export default function ClientAskAIPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5 }}
-                            style={{ marginTop: '2rem' }}
+                            style={{ marginTop: '5rem' }}
                         >
-                            <h2 style={{ 
-                                fontSize: '1.5rem', 
-                                marginBottom: '1rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.5rem'
-                            }}>
-                                <span style={{ color: '#4dabf7' }}>2.</span> Your Generated Color
+                            <h2>
+                                Your Generated Color
                             </h2>
                             
-                            <div style={{ 
-                                display: 'flex', 
-                                alignItems: 'center', 
-                                gap: '1.5rem',
-                                marginBottom: '1.5rem'
-                            }}>
+                            <div className="generated-color-display">
                                 <div
-                                    style={{
-                                        width: '80px',
-                                        height: '80px',
-                                        borderRadius: '12px',
-                                        backgroundColor: generatedColor,
-                                        border: '2px solid rgba(255,255,255,0.1)',
-                                        boxShadow: `0 4px 20px ${generatedColor}80`,
-                                        flexShrink: 0
-                                    }}
+                                    className="color-swatch"
+                                    style={{ backgroundColor: generatedColor }}
                                 ></div>
-                                <div>
-                                    <p style={{ 
-                                        fontSize: '1.1rem', 
-                                        fontWeight: '500',
-                                        marginBottom: '0.25rem'
-                                    }}>
+                                <div className="color-details">
+                                    <p>
                                         {colorPrompt || 'Random color'}
                                     </p>
-                                    <p style={{ 
-                                        fontSize: '1.4rem', 
-                                        fontWeight: '600',
-                                        color: generatedColor
-                                    }}>
+                                    <p>
                                         {generatedColor}
                                     </p>
                                 </div>
@@ -401,30 +285,14 @@ export default function ClientAskAIPage() {
                                 disabled={!generatedColor || auth?.role !== 'client' || !updateClientProfile}
                                 whileHover={{ scale: 1.03 }}
                                 whileTap={{ scale: 0.97 }}
-                                style={{
-                                    padding: '12px 24px',
-                                    background: 'linear-gradient(90deg, #40c057, #37b24d)',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '8px',
-                                    cursor: 'pointer',
-                                    fontSize: '1em',
-                                    fontWeight: '500',
-                                    width: '100%',
-                                    transition: 'all 0.3s ease',
-                                    opacity: (!generatedColor || !auth?.client || !updateClientProfile) ? 0.6 : 1
-                                }}
+                                className="ai-button"
+                                style={{ marginTop: '1.5rem' }}
                             >
                                 Save to My Colors
                             </motion.button>
                             
                             {saveStatus && (
-                                <p style={{ 
-                                    marginTop: '1rem', 
-                                    fontSize: '0.9em', 
-                                    color: saveStatus.includes('Failed') || saveStatus.includes('Error') ? '#ff6b6b' : '#69db7c',
-                                    textAlign: 'center'
-                                }}>
+                                <p className="color-status-message">
                                     {saveStatus}
                                 </p>
                             )}
@@ -437,68 +305,24 @@ export default function ClientAskAIPage() {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2, duration: 0.5 }}
-                    style={{
-                        position: 'relative',
-                        background: 'linear-gradient(145deg, #222222, #1a1a1a)',
-                        borderRadius: '12px',
-                        overflow: 'hidden',
-                        boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-                        aspectRatio: '1/1',
-                        minHeight: '500px'
-                    }}
+                    className="model-viewer-column"
                 >
                     {modelLoading && (
-                        <div style={{
-                            position: 'absolute',
-                            inset: 0,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            background: 'rgba(0,0,0,0.5)',
-                            zIndex: 10
-                        }}>
-                            <div style={{ textAlign: 'center' }}>
-                                <div style={{
-                                    width: '40px',
-                                    height: '40px',
-                                    border: '3px solid rgba(255,255,255,0.3)',
-                                    borderTopColor: '#4dabf7',
-                                    borderRadius: '50%',
-                                    margin: '0 auto 1rem',
-                                    animation: 'spin 1s linear infinite'
-                                }}></div>
-                                <p style={{ fontSize: "1.2rem", color: "white" }}>Loading 3D model...</p>
-                            </div>
+                        <div className="model-status-message">
+                            <div className="ai-spinner"></div>
+                            <p>Loading 3D model...</p>
                         </div>
                     )}
                     
                     {modelError && (
-                        <div style={{
-                            position: 'absolute',
-                            inset: 0,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            background: 'rgba(0,0,0,0.7)',
-                            zIndex: 10,
-                            padding: '2rem',
-                            textAlign: 'center'
-                        }}>
-                            <p style={{ color: "#ff6b6b", fontSize: "1.2rem" }}>{modelError}</p>
+                        <div className="model-status-message">
+                            <p>{modelError}</p>
                         </div>
                     )}
 
                     {!modelLoading && !modelError && modelFiles.length === 0 && (
-                        <div style={{
-                            position: 'absolute',
-                            inset: 0,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            background: 'rgba(0,0,0,0.5)',
-                            zIndex: 10
-                        }}>
-                            <p style={{ fontSize: "1.2rem", color: "#aaa" }}>No 3D models available</p>
+                        <div className="model-status-message">
+                            <p>No 3D models available</p>
                         </div>
                     )}
 
@@ -506,40 +330,28 @@ export default function ClientAskAIPage() {
                         <>
                             {modelFiles.length > 1 && (
                                 <>
-                                    <button 
+                                    <motion.button 
                                         onClick={prevModel} 
-                                        style={{ 
-                                            ...arrowStyle, 
-                                            position: "absolute", 
-                                            left: "20px",
-                                            top: "50%",
-                                            transform: "translateY(-50%)"
-                                        }} 
+                                        className="model-nav-button prev"
                                         aria-label="Previous Model"
                                         whileHover={{ scale: 1.1, background: "rgba(0,0,0,0.5)" }}
                                     >
                                         &lt;
-                                    </button>
-                                    <button 
+                                    </motion.button>
+                                    <motion.button 
                                         onClick={nextModel} 
-                                        style={{ 
-                                            ...arrowStyle, 
-                                            position: "absolute", 
-                                            right: "20px",
-                                            top: "50%",
-                                            transform: "translateY(-50%)"
-                                        }} 
+                                        className="model-nav-button next"
                                         aria-label="Next Model"
                                         whileHover={{ scale: 1.1, background: "rgba(0,0,0,0.5)" }}
                                     >
                                         &gt;
-                                    </button>
+                                    </motion.button>
                                 </>
                             )}
 
                             <Canvas 
                                 camera={{ position: [-30, 50, -20], fov: 70 }} 
-                                style={{ width: '100%', height: '100%' }}
+                                className="model-viewer-canvas-wrapper" // Apply the wrapper style here
                             >
                                 <ambientLight intensity={0.8} />
                                 <directionalLight position={[10, 10, 5]} intensity={1.2} />
@@ -548,7 +360,7 @@ export default function ClientAskAIPage() {
                                     <group rotation={[0, Math.PI, 0]}>
                                         <ClothingModel
                                             modelPath={selectedModel}
-                                            uniformColor={generatedColor || "#FFFFFF"}
+                                            uniformColor={generatedColor || "#FFFFFF"} // Pass generatedColor
                                         />
                                     </group>
                                 </Bounds>
@@ -560,31 +372,13 @@ export default function ClientAskAIPage() {
                                 />
                             </Canvas>
 
-                            <div style={{
-                                position: 'absolute',
-                                bottom: '20px',
-                                left: '50%',
-                                transform: 'translateX(-50%)',
-                                background: 'rgba(0,0,0,0.5)',
-                                padding: '8px 16px',
-                                borderRadius: '20px',
-                                fontSize: '0.9rem',
-                                backdropFilter: 'blur(5px)'
-                            }}>
+                            <div className="model-index-display">
                                 Model {modelFiles.indexOf(selectedModel) + 1} of {modelFiles.length}
                             </div>
                         </>
                     )}
                 </motion.div>
             </div>
-
-            {/* Global styles for animations */}
-            <style jsx global>{`
-                @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                }
-            `}</style>
         </div>
     );
 }

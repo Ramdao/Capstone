@@ -1,11 +1,12 @@
 import { Canvas } from "@react-three/fiber";
+import { motion } from 'framer-motion';
 import { Bounds, OrbitControls } from "@react-three/drei";
 import { useEffect, useState, useCallback } from "react"; 
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import ClothingModel from "../../ClothingModel.jsx"; 
 import ARClothingViewer from "../../ARClothingViewer.jsx"; 
 import { storage, ref, listAll, getDownloadURL } from "../../../firebase.js"; 
-import '../../Modelcontainer.css'; 
+import './Modelhome.css'; 
 
 export default function ClientHomePage({ embedMode = true, auth }) { 
   const [availableFolders, setAvailableFolders] = useState([
@@ -183,10 +184,19 @@ export default function ClientHomePage({ embedMode = true, auth }) {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", minHeight: embedMode ? "auto" : "100vh", backgroundColor: "#1a1a1a", color: "white" }}>
+    
+    <div className="pagelayout">
+      <motion.h1
+             className='about-heading'
+             initial={{ opacity: 0, y: 30 }}
+             animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+                      >
+              Collections
+        </motion.h1>
       {/* Folder Selection Dropdown */}
-      <div style={{ padding: "1rem", background: "#444", borderBottom: "1px solid #555", display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
-        <label htmlFor="folder-select" style={{ fontSize: "1.1rem" }}>Select Folder:</label>
+      <div  >
+        <label htmlFor="folder-select" style={{ fontSize: "1.1rem" }}></label>
         <select
           id="folder-select"
           onChange={(e) => setSelectedFolder(e.target.value)}
@@ -247,7 +257,7 @@ export default function ClientHomePage({ embedMode = true, auth }) {
       </div>
 
       {/* Main Viewer Section */}
-      <div className="model-container" style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1, minHeight: embedMode ? "400px" : "500px", position: "relative" }}>
+      <div className="model-container model-container-design " >
         {modelFiles.length > 1 && (
           <button onClick={prevModel} style={{ ...arrowStyle, position: "absolute", left: "10px" }} aria-label="Previous Model">&lt;</button>
         )}
@@ -278,7 +288,7 @@ export default function ClientHomePage({ embedMode = true, auth }) {
 
       {/* Color Pickers */}
       {embedMode && (
-        <div style={{ padding: "1.5rem", background: "#222", borderTop: "1px solid #444", maxHeight: "30vh", overflowY: "auto" }}>
+        <div className="color-picker-design">
           <h3 style={{ marginBottom: "1rem", color: "#eee" }}>Customize Colors</h3>
           {meshNames.length > 0 ? (
             meshNames.map((name) => (
