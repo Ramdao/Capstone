@@ -162,17 +162,17 @@ export default function ClientEventPage({ auth }) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
                 >
-                    Upcoming Events
+                    Upcoming Events for {selectedCalendarCountryName}
                 </motion.h1>
 
                
 
                 <motion.div
-                    className='box'
+                    className='weather-box'
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.6, duration: 0.8, ease: "easeOut" }}
-                    style={{ padding: '20px', backgroundColor: '#e9f7ff', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)', textAlign: 'center' }}
+                    
                 >
                     {weatherLoading && (
                         <p style={{ fontSize: '1.1em', color: '#555' }}>Loading weather data...</p>
@@ -181,15 +181,15 @@ export default function ClientEventPage({ auth }) {
                         <p style={{ color: 'red', fontWeight: 'bold', fontSize: '1.1em' }}>Error: {weatherError}</p>
                     )}
                     {weatherData && (
-                        <div>
+                        <div className='weather-info-design'>
                             <h2>Weather in {weatherData.name}, {weatherData.sys.country}</h2>
-                            <p style={{ fontSize: '1.5em', fontWeight: 'bold', margin: '10px 0' }}>
+                            <p >
                                 Temperature: {weatherData.main.temp}°{units === 'metric' ? 'C' : units === 'imperial' ? 'F' : 'K'}
                             </p>
-                            <p style={{ fontSize: '1.2em' }}>
+                            <p >
                                 Feels like: {weatherData.main.feels_like}°{units === 'metric' ? 'C' : units === 'imperial' ? 'F' : 'K'}
                             </p>
-                            <p style={{ fontSize: '1.2em' }}>
+                            <p >
                                 Description: {weatherData.weather[0].description}
                                 {weatherData.weather[0].icon && (
                                     <img
@@ -209,17 +209,8 @@ export default function ClientEventPage({ auth }) {
                 </motion.div>
 
                 {/* --- Holiday Calendar Section --- */}
-                <hr style={{ margin: '60px 0', border: 'none', borderTop: '1px dashed #ccc' }} />
-
-                <motion.h2
-                    className='section-heading'
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.8, duration: 0.8, ease: "easeOut" }}
-                    style={{ textAlign: 'center', marginBottom: '20px', color: '#333' }}
-                >
-                    Upcoming Holidays for {selectedCalendarCountryName}
-                </motion.h2>
+            <div className='holiday-container'>
+                
 
                 {holidaysLoading && (
                     <motion.p
@@ -244,7 +235,7 @@ export default function ClientEventPage({ auth }) {
                 )}
 
                 {!holidaysLoading && !holidaysError && holidayEvents.length > 0 ? (
-                    <div className='events-container' style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', padding: '20px' }}>
+                    <div className='events-container'>
                         {holidayEvents.map((event, index) => (
                             <motion.div
                                 key={event.id}
@@ -253,15 +244,9 @@ export default function ClientEventPage({ auth }) {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1 * index, duration: 0.6, ease: "easeOut" }}
                                 style={{
-                                    backgroundColor: 'white',
-                                    padding: '20px',
-                                    borderRadius: '8px',
-                                    boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
-                                    display: 'flex',
-                                    flexDirection: 'column',
                                     justifyContent: 'space-between',
-                                    minHeight: '120px',
-                                    borderLeft: '5px solid #007bff'
+                                    minWidth: '200px',
+                                    
                                 }}
                             >
                                 <h3 style={{ margin: '0 0 10px 0', color: '#007bff' }}>{event.summary}</h3>
@@ -273,6 +258,7 @@ export default function ClientEventPage({ auth }) {
                     !holidaysLoading && !holidaysError && <p style={{ textAlign: 'center', fontSize: '1.1em', color: '#555' }}>No upcoming holidays found for this country.</p>
                 )}
             </div>
+        </div>
         </>
     );
 }

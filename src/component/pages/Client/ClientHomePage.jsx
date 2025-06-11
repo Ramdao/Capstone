@@ -317,9 +317,11 @@ export default function ClientHomePage({ embedMode = true, auth }) {
       )}
 
       {/* Mobile AR Viewer */}
+    <div className="ARModel-client">
       {isMobile && selectedModel && (
-        <ARClothingViewer modelPath={selectedModel} />
+        <ARClothingViewer modelPath={selectedModel}  />
       )}
+    </div>
     </div>
   );
 }

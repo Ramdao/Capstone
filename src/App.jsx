@@ -38,8 +38,8 @@ import './App.css'
 
 // Create Axios instance
 const api = axios.create({
-  baseURL: 'http://localhost:8000',
-  // baseURL: 'https://aliceblue-wolverine-462272.hostingersite.com',
+  baseURL: 'http://localhost:8000',
+  // baseURL: 'https://aliceblue-wolverine-462272.hostingersite.com',
   // enable withCredentials so cookies (including XSRF-TOKEN) are sent automatically
   withCredentials: true,
 });

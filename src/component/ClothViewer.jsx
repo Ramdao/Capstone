@@ -114,7 +114,7 @@ export default function ClothViewer({ embedMode = false }) {
 
       {/* Model viewer with arrows for embed mode */}
       {embedMode ? (
-        <div className="model-container">
+        <div className="model-container-home">
           <button onClick={prevModel} style={arrowStyle} aria-label="Previous Model">&lt;</button>
          <div className="model-container-design">
           <Canvas  camera={{ position: [-30, 50, -20], fov: 70 }}>

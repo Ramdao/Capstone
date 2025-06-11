@@ -24,5 +24,17 @@ body{
 
     object-position: center center; 
   }
+
+  p{
+   margin-left: 20px;
+   font-size: 30px;
+  }
+
+  input{
+    width: 90%;
+   
+    height: 45px;
+    font-size: 24px;
+  }
 }
 

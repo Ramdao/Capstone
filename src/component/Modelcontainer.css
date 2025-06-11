@@ -6,14 +6,14 @@
   width: 40vw;
   position: absolute;
   left: 50%;
-  top: 15%;
+  top: 40%;
   transform: translate(-50%, -50%);
 
 }
 
 .model-container-design {
    
-    width: 100%;
+    width: 85%;
     height: 50vh;
    box-sizing: border-box;
 
@@ -26,16 +26,31 @@
   border-radius: 10px;
 }
 
+
   @media (max-width: 768px) {
     
-    .model-container{
-      left: 35%;
+    .model-container-home{
+    
+      left: 28.5%;
       top: 35%;
-     
+      height: 50vh;
+      width: 70vw;
+      
     }
+
     .model-container-design {
-      width: 300px;
+     
       height: 30vh;
+      
     }
+
+    .ARmodel{
+      position:absolute;
+      top:110%;
+      right:16%;
+      width: 90%;
+    }
+  
+   
    
   }

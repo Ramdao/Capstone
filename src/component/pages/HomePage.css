@@ -3,7 +3,7 @@ h1{
     margin-bottom: 0;
     line-height: 0.8;
     position: relative;
-    font-size: 96px;
+    font-size: 80px;
     background: linear-gradient(90deg, #ff0000, #ffb700);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;

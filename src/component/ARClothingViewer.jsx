@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-
+import './Modelcontainer.css';
+import '../component/pages/PageGlobal.css';
 const ARClothingViewer = ({ modelPath }) => {
   const [showAR, setShowAR] = useState(false);
 
@@ -9,18 +10,25 @@ const ARClothingViewer = ({ modelPath }) => {
   const iosSrc = modelPath.replace(".glb", ".usdz");
 
   return (
-    <div style={{ padding: "2rem", position: "absolute", top: "190%", left: "1px", right: 0 }}>
-      <h2>View Clothing in AR</h2>
+    <>
+    <div   className="ARmodel">
+      
 
       {showAR && (
+
+       
         <model-viewer
+        
           src={modelPath}
           ios-src={iosSrc}
           ar
           ar-modes="scene-viewer quick-look webxr"
           auto-rotate
           camera-controls
-          style={{ width: "100%", maxWidth: "500px", height: "500px" }}
+          style={{
+            top:"50px",
+            left:"-15%"
+          }}
         >
           <button
             slot="ar-button"
@@ -28,8 +36,9 @@ const ARClothingViewer = ({ modelPath }) => {
               backgroundColor: "#000",
               color: "#fff",
               padding: "10px",
-              borderRadius: "5px",
-              marginTop: "1rem",
+              position: "absolute",
+              left: "22%",
+              top: "-10px",
             }}
           >
             👓 View in your space
@@ -39,12 +48,14 @@ const ARClothingViewer = ({ modelPath }) => {
 
       <button
         onClick={() => setShowAR(!showAR)}
-        style={{ marginTop: "20px", padding: "10px 20px", borderRadius: "5px" }}
+        className="button-nav"
       >
         {showAR ? "Hide AR View" : "Show AR View"}
       </button>
     </div>
+    </>
   );
+
 };
 
 export default ARClothingViewer;

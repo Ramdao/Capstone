@@ -1,13 +1,4 @@
-.weather-box{
-   display: flex;
-    justify-content: left;
-  border: 5px solid transparent; 
-  border-image: linear-gradient(90deg, #ff0000, #FFB700); 
-  border-image-slice: 1;
-  background: linear-gradient(90deg, rgba(217, 217, 217, 0.1), rgba(115, 115, 115, 0.15));
-  backdrop-filter: blur(20px);
-  border-radius: 10px;
-}
+
 
 .box {
   display: flex;
@@ -22,30 +13,56 @@
   border-radius: 10px;
 }
 
+.events-container{
+  position: absolute;
+  display: flex;
+  flex-direction:column;
+  top:41%;
+  gap:10px;
+  width: 45%;
+  left:55%;
+}
+
+.weather-info-design h2{
+  font-size: 30px;
+}
+
+.weather-info-design p{
+  font-size: 20px;
+}
 .event-box{
    display: flex;
     justify-content: left;
+    flex-direction: column;
   border: 5px solid transparent; 
   border-image: linear-gradient(90deg, #ff0000, #FFB700); 
   border-image-slice: 1;
   background: linear-gradient(90deg, rgba(217, 217, 217, 0.1), rgba(115, 115, 115, 0.15));
   backdrop-filter: blur(20px);
   border-radius: 10px;
+  max-width: 60%;
+  padding: 10px;
+  
 }
 
 .weather-box{
    display: flex;
     justify-content: left;
+    padding: 60px;
+    padding-bottom: 60px;
+   margin-left: 10%;
   border: 5px solid transparent; 
   border-image: linear-gradient(90deg, #ff0000, #FFB700); 
   border-image-slice: 1;
   background: linear-gradient(90deg, rgba(217, 217, 217, 0.1), rgba(115, 115, 115, 0.15));
   backdrop-filter: blur(20px);
   border-radius: 10px;
+  align-self: flex-start;
+ 
 }
 p{
   position: relative;
-    font-size: 36px;
+    font-size: 30px;
      
 }
 
@@ -70,14 +87,14 @@ margin-top: 30px;
 display: flex;
 justify-content: center;
 font-family: Koulen;
-font-size: 32px;
+font-size: 28px;
 color:white;
- width: 40%;
+ width: 35%;
 position: relative;
 background-color: #000;
 border: 1px solid #fff;
 box-sizing: border-box;
-height: 56px;
+height: 50px;
 transition: all 0.3s ease;
 align-self: center;
 }
@@ -124,14 +141,14 @@ form{
 }
 
 label{
-  font-size: 36px;
+  font-size: 25px;
 }
 
 input{
   z-index: 10;
     width: 85vw;
-    font-size: 36px;
-    height: 76px;
+    font-size: 20px;
+    height: 60px;
     border-style: solid;
     border-width: 3px;
     border-color: white;
@@ -140,7 +157,7 @@ input{
 
 .linkp{
     align-self: center;
-    font-size: 32px;
+    font-size: 20px;
 }
 
 .link{
@@ -152,9 +169,9 @@ input{
 }
 
 select{
-    width: 85vw;
-    font-size: 36px;
-    height: 76px;
+    width: 85.7vw;
+    font-size: 20px;
+    height: 60px;
     border-style: solid;
     border-width: 3px;
     border-color: white;
@@ -218,6 +235,11 @@ select{
 
 
 @media (max-width: 768px) {
+
+  h1{
+    
+    font-size: 50px;
+  }
   .user-profile-table-container th,
 .user-profile-table-container td {
   position: relative;
@@ -266,5 +288,14 @@ select{
 
   p{
     margin-top: 0px;
+  }
+
+  .events-container{
+    top:80%;
+    left:25%
+  }
+
+  .weather-box{
+    margin-left: 0px;
   }
 }

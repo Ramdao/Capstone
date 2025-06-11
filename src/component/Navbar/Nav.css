@@ -5,7 +5,7 @@
   margin-top: 30px;
   margin-left: 3%;
   width: 95%;
-  height: 125px;
+  height: 100px;
   display: flex;
   align-items: center;
   box-sizing: border-box;
@@ -25,7 +25,7 @@
   margin-left: 20px;
   width: 223px;
   position: relative;
-  font-size: 48px;
+  font-size: 36px;
   font-family: Koulen;
   text-align: left;
   display: inline-block;
@@ -123,7 +123,7 @@
     cursor: pointer;
     justify-content: flex-end;
     align-items: center;
-    font-size: 28px;
+    font-size: 22px;
     font-family: Koulen;
 }
 

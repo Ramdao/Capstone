@@ -67,3 +67,25 @@ textarea{
   backdrop-filter: blur(20px);
   border-radius: 10px;
 }
+
+@media (max-width: 768px) {
+
+  .stylist-select-container {
+    
+    padding-left: 15px;
+    width: 90%;
+  }
+
+  .nav{
+    width: 100%;
+    padding: 0;
+  }
+
+  select{
+    font-size: 24px;
+  }
+  
+  textarea{
+    font-size: 24px;
+  }
+}
