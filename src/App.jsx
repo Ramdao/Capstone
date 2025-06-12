@@ -410,7 +410,7 @@ function App() {
   const handleClientStylistAndMessageUpdate = useCallback(async (stylistId, message) => {
     try {
       // Call csrf-cookie endpoint first to ensure the XSRF-TOKEN cookie is set
-      await api.get('/sanctum/csrf-cookie');
+//       await api.get('/sanctum/csrf-cookie');
 
       let stylistUpdateSuccess = false;
       let messageUpdateSuccess = false;

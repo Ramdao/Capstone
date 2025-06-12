@@ -1,4 +1,5 @@
 import './PageGlobal.css';
+import './HomePage.css'
 import { motion } from 'framer-motion';
 import React, { useState, useEffect } from 'react';
 import { fetchCalendarEvents } from '../../calendarApi'; 
@@ -106,7 +107,7 @@ export default function EventPage() {
                 )}
 
                 {!loading && !error && events.length > 0 ? (
-                    <div className='events-container'> {/* A container for all event-boxes */}
+                    <div className='homepage-event'> {/* A container for all event-boxes */}
                         {events.map((event, index) => (
                             <motion.div
                                 key={event.id}

@@ -57,6 +57,13 @@ transition: all 0.3s ease;
   box-shadow: 0 0 10px rgba(255, 183, 0, 0.5);
 }
 
+.homepage-event{
+    display:flex;
+    flex-direction: column;
+    width: 100%;
+    margin-left:45%;
+}
+
 @media (max-width: 768px) {
  
     .homepage-title{
@@ -85,5 +92,9 @@ h2{
         right:10%;
         width: 125%;
         height: 100%;
+    }
+
+    .homepage-event{
+        margin-left:35%;
     }
 }

@@ -1,0 +1,352 @@
+/* Base Styles */
+.admin-page-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    color: #fff;
+}
+
+.admin-page-header {
+    text-align: center;
+   
+}
+
+
+.admin-page-header p {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Content Box */
+.admin-content-box {
+      border: 5px solid transparent; 
+  border-image: linear-gradient(90deg, #ff0000, #FFB700); 
+  border-image-slice: 1;
+  background: linear-gradient(90deg, rgba(217, 217, 217, 0.1), rgba(115, 115, 115, 0.15));
+  backdrop-filter: blur(20px);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+/* Folder Selection */
+.folder-selection-container {
+    margin-bottom: 2rem;
+}
+
+.folder-selection-container label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.folder-select-wrapper {
+    position: relative;
+}
+
+.folder-select-wrapper select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: rgba(40, 40, 50, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    appearance: none;
+    transition: all 0.3s ease;
+}
+
+.folder-select-wrapper select:focus {
+    outline: none;
+    border-color: #f9cb28;
+    box-shadow: 0 0 0 2px rgba(249, 203, 40, 0.2);
+}
+
+.folder-select-wrapper::after {
+    content: '▼';
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.6);
+    pointer-events: none;
+}
+
+/* Model Viewer */
+.model-viewer-container {
+    background: rgba(30, 30, 40, 0.9);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.model-viewer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.model-viewer-header h3 {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.model-viewer-header h3 span {
+    font-weight: 600;
+    color: #f9cb28;
+}
+
+.model-counter {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-left: 0.5rem;
+}
+
+.model-viewer-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.delete-button, 
+.close-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.delete-button {
+    background: rgba(255, 75, 75, 0.2);
+    color: #ff4b4b;
+    border: 1px solid rgba(255, 75, 75, 0.3);
+}
+
+.delete-button:hover:not(:disabled) {
+    background: rgba(255, 75, 75, 0.3);
+    transform: translateY(-1px);
+}
+
+.delete-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.close-button {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.close-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.model-canvas-wrapper {
+    position: relative;
+    height: 500px;
+    width: 100%;
+    background: #111;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.model-nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    backdrop-filter: blur(5px);
+    font-size: 1.5rem;
+}
+
+.model-nav-button:hover {
+    background: rgba(249, 203, 40, 0.7);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.model-nav-button.prev {
+    left: 20px;
+}
+
+.model-nav-button.next {
+    right: 20px;
+}
+
+/* Models List */
+.models-list-container {
+    background: rgba(30, 30, 40, 0.6);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.models-list-container h3 {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.folder-path {
+    font-family: monospace;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    color: #f9cb28;
+}
+
+.models-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.model-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.model-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.model-info {
+    margin-bottom: 1rem;
+}
+
+.model-name {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    word-break: break-all;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.view-button {
+    width: 100%;
+    padding: 0.5rem;
+    background: rgba(0, 120, 255, 0.2);
+    color: #0078ff;
+    border: 1px solid rgba(0, 120, 255, 0.3);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.view-button:hover {
+    background: rgba(0, 120, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Status Messages */
+.loading-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 2rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #f9cb28;
+    animation: spin 1s ease-in-out infinite;
+}
+
+.error-message {
+    background: rgba(255, 50, 50, 0.2);
+    border-left: 4px solid #ff3333;
+    padding: 1rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+    color: #ff6b6b;
+}
+
+.success-message {
+    background: rgba(50, 255, 50, 0.2);
+    border-left: 4px solid #33ff33;
+    padding: 1rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+    color: #6bff6b;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Animations */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .admin-page-container {
+        padding: 1rem;
+    }
+    
+    .admin-content-box {
+        padding: 1.5rem;
+    }
+    
+    
+    
+    .model-canvas-wrapper {
+        height: 400px;
+    }
+    
+    .models-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .model-viewer-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .model-viewer-actions {
+        width: 100%;
+    }
+    
+    .delete-button,
+    .close-button {
+        flex: 1;
+        justify-content: center;
+    }
+}

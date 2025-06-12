@@ -63,9 +63,6 @@ export default function ClientList({
                 >
                   {client.user?.name || 'Client Name'} ({client.user?.email || 'No Email'})
                 </Link>
-                <p className="text-gray-600 text-sm mt-1">
-                  Country: {client.country || 'N/A'} | City: {client.city || 'N/A'}
-                </p>
                 {client.message_to_stylist && (
                   <p className="text-gray-500 text-sm italic mt-2">
                     Message: "{client.message_to_stylist}"
