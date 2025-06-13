@@ -142,13 +142,13 @@ export default function ClientDetail({
         {success && <div className="text-green-500 mb-4">{success}</div>}
 
         <div className="profile-details">
-          <p><strong>Name:</strong> {client.user?.name || 'N/A'}</p>
-          <p><strong>Email:</strong> {client.user?.email || 'N/A'}</p>
-          <p><strong>Country:</strong> {client.country || 'N/A'}</p>
-          <p><strong>City:</strong> {client.city || 'N/A'}</p>
-          <p><strong>Body Type:</strong> {client.body_type || 'N/A'}</p>
-          <p><strong>Favorite Colors:</strong> {clientColors}</p>
-          <p><strong>Message to Stylist:</strong> {client.message_to_stylist || 'No message'}</p>
+          <p className='listp profile-styling'><strong>Name:</strong> {client.user?.name || 'N/A'}</p>
+          <p className='listp profile-styling'><strong>Email:</strong> {client.user?.email || 'N/A'}</p>
+          <p className='listp profile-styling'><strong>Country:</strong> {client.country || 'N/A'}</p>
+          <p className='listp profile-styling'><strong>City:</strong> {client.city || 'N/A'}</p>
+          <p className='listp profile-styling'><strong>Body Type:</strong> {client.body_type || 'N/A'}</p>
+          <p className='listp profile-styling'> <strong>Favorite Colors:</strong> {clientColors}</p>
+          <p className='listp profile-styling'><strong>Message to Stylist:</strong> {client.message_to_stylist || 'No message'}</p>
           {/* Add more client-specific details here */}
 
           {/* --- Upload Section for Stylists --- */}
@@ -160,12 +160,12 @@ export default function ClientDetail({
                 type="file" 
                 accept=".glb" 
                 onChange={handleFileChange} 
-                className="mb-3 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                className='nav-stylist'
               />
               
               <button 
                 onClick={handleUpload} 
-                className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="nav-stylist"
                 disabled={!file} // Disable button if no file is selected
               >
                 Upload {file ? file.name : '.glb File'}
@@ -176,11 +176,7 @@ export default function ClientDetail({
               )}
               {uploadError && <div className="mt-3 text-sm text-red-600">{uploadError}</div>}
               {uploadSuccess && <div className="mt-3 text-sm text-green-600">{uploadSuccess}</div>}
-              {downloadUrl && (
-                <p className="mt-3 text-sm text-gray-800">
-                  File URL: <a href={downloadUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">{downloadUrl}</a>
-                </p>
-              )}
+              
             </div>
           )}
           {/* --- End Upload Section --- */}
@@ -188,7 +184,7 @@ export default function ClientDetail({
           <div className="mt-6">
             <button
               onClick={() => navigate('/client-list')}
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+              className="nav-stylist"
             >
               Back to Client List
             </button>

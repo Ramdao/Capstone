@@ -39,7 +39,7 @@ export default function ClientHomePage({ embedMode = true, auth }) {
         const clientFolderPath = `clients/${auth.email}/`;
         const clientFolder = {
           path: clientFolderPath,
-          name: `My Models (${auth.email.replace(/\./g, ' DOT ')})`
+          name: `My Models (${auth.email})`
         };
         
         setAvailableFolders([...publicFolders, clientFolder]);

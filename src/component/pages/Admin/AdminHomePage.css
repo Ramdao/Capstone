@@ -309,6 +309,39 @@
     color: rgba(255, 255, 255, 0.6);
 }
 
+.nav-admin{
+    text-decoration: none;
+cursor: pointer;
+font-family: Koulen;
+font-size: 0.85rem;
+color:white;
+ width: 100%;
+background-color: #000;
+border: 1px solid #fff;
+box-sizing: border-box;
+padding: 0.5rem 2rem;
+transition: all 0.3s ease;
+align-self: center;
+display: inline-block; 
+  white-space: nowrap;   
+  overflow: hidden; 
+  display: flex;     
+  align-content: center;
+  justify-content: center;
+}
+
+.nav-admin:hover{
+    background: linear-gradient(90deg, #ff0000, #FFB700);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.2);
+  border-color: #ffb700;
+  transition: all 0.3s ease;
+   border-image: linear-gradient(90deg, #ff0000, #FFB700);
+  border-image-slice: 1;
+  box-shadow: 0 0 10px rgba(255, 183, 0, 0.5);
+}
+
 /* Animations */
 @keyframes spin {
     to { transform: rotate(360deg); }

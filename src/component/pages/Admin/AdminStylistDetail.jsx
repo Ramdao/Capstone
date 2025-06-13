@@ -125,8 +125,8 @@ export default function AdminStylistDetail({
 
         {!editMode ? (
           <div className="profile-details">
-            <p><strong>Name:</strong> {stylist.user?.name || 'N/A'}</p>
-            <p><strong>Email:</strong> {stylist.user?.email || 'N/A'}</p>
+            <p className='profile-styling'><strong>Name:</strong> {stylist.user?.name || 'N/A'}</p>
+            <p className='profile-styling'><strong>Email:</strong> {stylist.user?.email || 'N/A'}</p>
           
 
             <div className="mt-6 space-x-4">

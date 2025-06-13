@@ -64,7 +64,7 @@ export default function ClientList({
                   {client.user?.name || 'Client Name'} ({client.user?.email || 'No Email'})
                 </Link>
                 {client.message_to_stylist && (
-                  <p className="text-gray-500 text-sm italic mt-2">
+                  <p className ="clientp">
                     Message: "{client.message_to_stylist}"
                   </p>
                 )}

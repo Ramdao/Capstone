@@ -11,7 +11,10 @@
     margin-bottom: 2rem;
 }
 
-
+.listp{
+    margin-left: 20px;
+    font-size: 20px;
+}
 
 .page-subtitle {
     font-size: 1.1rem;
@@ -162,6 +165,38 @@
     transition: all 0.2s;
     backdrop-filter: blur(5px);
 }
+.nav-stylist{
+    text-decoration: none;
+cursor: pointer;
+font-family: Koulen;
+font-size: 0.85rem;
+color:white;
+ width: 100%;
+background-color: #000;
+border: 1px solid #fff;
+box-sizing: border-box;
+padding: 0.5rem 2rem;
+transition: all 0.3s ease;
+align-self: center;
+display: inline-block; 
+  white-space: nowrap;   
+  overflow: hidden; 
+  display: flex;     
+  align-content: center;
+  justify-content: center;
+}
+
+.nav-stylist:hover{
+    background: linear-gradient(90deg, #ff0000, #FFB700);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.2);
+  border-color: #ffb700;
+  transition: all 0.3s ease;
+   border-image: linear-gradient(90deg, #ff0000, #FFB700);
+  border-image-slice: 1;
+  box-shadow: 0 0 10px rgba(255, 183, 0, 0.5);
+}
 
 .model-nav-button:hover {
     background: rgba(255, 138, 0, 0.7);
@@ -215,6 +250,7 @@
     display: flex;
     flex-direction: column;
     text-align: left;
+    
 }
 
 .client-name {
@@ -291,6 +327,12 @@
     border: 1px solid rgba(255, 138, 0, 0.3);
 }
 
+.profile-details{
+     padding: 10px;
+    width: 50%;
+}
+
+
 .view-model-button:hover {
     background: rgba(255, 138, 0, 0.3);
     transform: translateY(-1px);
@@ -332,6 +374,12 @@
         padding: 1rem;
     }
     
+    ul{
+    font-size: 23px;
+  }
+  .clientp{
+    font-size: 20px;
+  }
     .content-box {
         padding: 1.5rem;
     }
@@ -361,4 +409,11 @@
         width: 100%;
         text-align: center;
     }
+
+    .profile-details{
+        padding: 10px;
+        
+        width: 70%;
+    }
 }
+

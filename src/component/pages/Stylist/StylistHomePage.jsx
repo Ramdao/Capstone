@@ -241,13 +241,13 @@ export default function StylistHomePage({ auth, api, setError, setSuccess, myCli
                                                             <div className="model-actions">
                                                                 <button
                                                                     onClick={() => handleViewModel(folder, modelUrl)}
-                                                                    className="view-model-button"
+                                                                    className="nav-stylist"
                                                                 >
                                                                     View 3D Model
                                                                 </button>
                                                                 <Link
                                                                     to={`/stylist/clients/${folder.clientId}`}
-                                                                    className="client-details-button"
+                                                                    className="nav-stylist"
                                                                 >
                                                                     Client Details
                                                                 </Link>
@@ -261,7 +261,7 @@ export default function StylistHomePage({ auth, api, setError, setSuccess, myCli
                                                 <p>No models uploaded for this client yet.</p>
                                                 <Link 
                                                     to={`/stylist/clients/${folder.clientId}`}
-                                                    className="upload-prompt-button"
+                                                    className="nav-stylist"
                                                 >
                                                     Upload Models
                                                 </Link>

@@ -21,6 +21,8 @@ body{
   pointer-events: none; 
 }
 
+
+
 @media (max-width: 768px) {
   #bg-video {
 

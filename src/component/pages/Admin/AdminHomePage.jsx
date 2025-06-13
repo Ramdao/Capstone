@@ -231,17 +231,17 @@ export default function AdminHomePage({ auth, setError, setSuccess }) {
                             <div className="model-viewer-actions">
                                 <button
                                     onClick={handleDeleteModel}
-                                    className="delete-button"
+                                    className="nav-admin"
                                     disabled={deletingModel}
                                 >
-                                    <FiTrash2 />
+                                    
                                     {deletingModel ? 'Deleting...' : 'Delete'}
                                 </button>
                                 <button
                                     onClick={handleCloseViewer}
-                                    className="close-button"
+                                    className="nav-admin"
                                 >
-                                    <FiX />
+                                    
                                     Close
                                 </button>
                             </div>
@@ -286,9 +286,7 @@ export default function AdminHomePage({ auth, setError, setSuccess }) {
 
                 {/* Models List */}
                 <div className="models-list-container">
-                    <h3>
-                        Models in: <span className="folder-path">{selectedFolder || "Root"}</span>
-                    </h3>
+                  
                     
                     {loadingModels && (
                         <div className="loading-indicator">
@@ -318,7 +316,7 @@ export default function AdminHomePage({ auth, setError, setSuccess }) {
                                     </div>
                                     <button
                                         onClick={() => handleViewModel(modelUrl, index)}
-                                        className="view-button"
+                                        className="nav-stylist"
                                     >
                                         View Model
                                     </button>

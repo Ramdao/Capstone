@@ -153,13 +153,13 @@ export default function AdminClientDetail({
 
         {!editMode ? (
           <div className="profile-details">
-            <p><strong>Name:</strong> {client.user?.name || 'N/A'}</p>
-            <p><strong>Email:</strong> {client.user?.email || 'N/A'}</p>
-            <p><strong>Country:</strong> {client.country || 'N/A'}</p>
-            <p><strong>City:</strong> {client.city || 'N/A'}</p>
-            <p><strong>Body Type:</strong> {client.body_type || 'N/A'}</p>
-            <p><strong>Favorite Colors:</strong> {clientColors}</p>
-            <p><strong>Message to Stylist:</strong> {client.message_to_stylist || 'No message'}</p>
+            <p className='profile-styling'><strong>Name:</strong> {client.user?.name || 'N/A'}</p>
+            <p className='profile-styling'><strong>Email:</strong> {client.user?.email || 'N/A'}</p>
+            <p className='profile-styling'><strong>Country:</strong> {client.country || 'N/A'}</p>
+            <p className='profile-styling'><strong>City:</strong> {client.city || 'N/A'}</p>
+            <p className='profile-styling'><strong>Body Type:</strong> {client.body_type || 'N/A'}</p>
+            <p className='profile-styling'><strong>Favorite Colors:</strong> {clientColors}</p>
+            <p className='profile-styling'><strong>Message to Stylist:</strong> {client.message_to_stylist || 'No message'}</p>
             {/* <p><strong>Assigned Stylist ID:</strong> {client.stylist_id || 'N/A'}</p> */}
 
             <div className="mt-6 space-x-4">
