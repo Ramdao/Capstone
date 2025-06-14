@@ -2,6 +2,7 @@
     
   position: absolute;
   top:30%
+
 }
 .nav{
 
@@ -72,7 +73,7 @@ textarea{
 
   .stylist-select-container {
     
-    padding-left: 15px;
+    margin-left: 20px;
     width: 90%;
   }
 
@@ -82,9 +83,7 @@ textarea{
   }
   
   
-  select{
-    font-size: 24px;
-  }
+ 
   
   textarea{
     font-size: 24px;

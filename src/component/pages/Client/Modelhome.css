@@ -38,7 +38,29 @@
    
 }
 
+/* Base container for the select */
+.my-select__control {
+  padding: 0.2rem 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #777;
+  background-color: #666;
+  color: white; 
+  font-size: 1rem;
+  cursor: pointer;
+  width: 60rem; 
+  min-height: auto;
+  box-shadow: none;
+  transition: all 0.2s ease-in-out;
+}
+
+
+
 @media (max-width: 768px) {
+
+  .my-select__control {
+
+    width: 20rem;
+  }
 
   .model-container {
     top:60%;

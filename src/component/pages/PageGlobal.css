@@ -4,7 +4,7 @@
   display: flex;
   justify-content: left;
   width: 95%;
-  min-height: 75vh;
+  min-height: 60vh;
   border: 5px solid transparent; 
   border-image: linear-gradient(90deg, #ff0000, #FFB700); 
   border-image-slice: 1;
@@ -62,7 +62,7 @@
 }
 p{
   position: relative;
-    font-size: 30px;
+    font-size: 24px;
      
 }
 
@@ -127,7 +127,6 @@ align-self: center;
 
 .update{
   position: relative;
-  left: 30%;
   margin-bottom: 30px;
 }
   
@@ -135,8 +134,8 @@ align-self: center;
 form{
   display: flex;
   flex-direction: column;
-  margin-top: 50px;
-  margin-left: 50px;
+  margin-top: 10px;
+  margin-left: 30px;
   
 }
 
@@ -148,7 +147,7 @@ input{
   z-index: 10;
     width: 85vw;
     font-size: 20px;
-    height: 60px;
+    height: 50px;
     border-style: solid;
     border-width: 3px;
     border-color: white;
@@ -242,8 +241,12 @@ ul{
   font-size: 25px;
 }
 
+
+
 @media (max-width: 768px) {
  
+
+
   h1{
     
     font-size: 50px;
@@ -259,7 +262,7 @@ ul{
   }
 
   form {
-    margin-left: 0;
+    margin-left: -10px;
     
   }
 
@@ -268,6 +271,7 @@ ul{
   }
 
   select{
+    font-size: 20px;
     width: 82vw;
   }
 
@@ -280,11 +284,7 @@ ul{
     font-size: 28px;
     height: 48px;
   }
-  input, label{
-    font-size: 32px;
-    height: 56px;
-    width: 80vw;
-  }
+ 
   .edit{
     top:30px;
     left: 5%;
@@ -294,9 +294,7 @@ ul{
     margin-bottom: 20px;
   }
 
-  p{
-    margin-top: 0px;
-  }
+ 
 
   .events-container{
     top:80%;

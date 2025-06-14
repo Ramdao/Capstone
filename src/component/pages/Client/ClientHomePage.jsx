@@ -1,20 +1,21 @@
 import { Canvas } from "@react-three/fiber";
 import { motion } from 'framer-motion';
 import { Bounds, OrbitControls } from "@react-three/drei";
-import { useEffect, useState, useCallback } from "react"; 
+import { useEffect, useState, useCallback } from "react";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import ClothingModel from "../../ClothingModel.jsx"; 
-import ARClothingViewer from "../../ARClothingViewer.jsx"; 
-import { storage, ref, listAll, getDownloadURL } from "../../../firebase.js"; 
-import './Modelhome.css'; 
+import ClothingModel from "../../ClothingModel.jsx";
+import ARClothingViewer from "../../ARClothingViewer.jsx";
+import { storage, ref, listAll, getDownloadURL } from "../../../firebase.js";
+import './Modelhome.css';
+import Select from 'react-select'; // Import react-select
 
-export default function ClientHomePage({ embedMode = true, auth }) { 
+export default function ClientHomePage({ embedMode = true, auth }) {
   const [availableFolders, setAvailableFolders] = useState([
-    { path: "", name: "Root Folder" },
-    { path: "publicModels", name: "Public Models" },
+    { value: "", label: "Root Folder" }, // Changed to value/label for react-select
+    { value: "publicModels", label: "Public Models" },
   ]);
 
-  const [selectedFolder, setSelectedFolder] = useState("publicModels"); 
+  const [selectedFolder, setSelectedFolder] = useState("publicModels");
   const [modelFiles, setModelFiles] = useState([]);
   const [selectedModel, setSelectedModel] = useState(null);
   const [meshNames, setMeshNames] = useState([]);
@@ -23,31 +24,25 @@ export default function ClientHomePage({ embedMode = true, auth }) {
   const [loadingFolders, setLoadingFolders] = useState(true);
   const [folderError, setFolderError] = useState(null);
 
-  // Fetch only public folders and the current client's folder
   const fetchFirebaseFolders = useCallback(async () => {
     setLoadingFolders(true);
     setFolderError(null);
     try {
-      // Always include public folders
       const publicFolders = [
-        { path: "", name: "Root Folder" },
-        { path: "publicModels", name: "Public Models" },
+        { value: "", label: "Root Folder" },
+        { value: "publicModels", label: "Public Models" },
       ];
 
-      // If user is authenticated as a client, add their specific folder
       if (auth && auth.role === 'client' && auth.email) {
         const clientFolderPath = `clients/${auth.email}/`;
         const clientFolder = {
-          path: clientFolderPath,
-          name: `My Models (${auth.email})`
+          value: clientFolderPath,
+          label: `My Models (${auth.email})`
         };
-        
         setAvailableFolders([...publicFolders, clientFolder]);
       } else {
-        // For unauthenticated users or non-clients, only show public folders
         setAvailableFolders(publicFolders);
       }
-
     } catch (error) {
       console.error("Error fetching Firebase folders:", error);
       setFolderError("Failed to load folders. Please try again.");
@@ -56,34 +51,29 @@ export default function ClientHomePage({ embedMode = true, auth }) {
     }
   }, [auth]);
 
-  // Call fetchFirebaseFolders on component mount and when auth changes
   useEffect(() => {
     fetchFirebaseFolders();
   }, [fetchFirebaseFolders]);
 
-  // Auto-select the appropriate folder based on auth status
   useEffect(() => {
     if (auth && auth.role === 'client' && auth.email && availableFolders.length > 0) {
       const clientFolderPath = `clients/${auth.email}/`;
-      const foundFolder = availableFolders.find(folder => folder.path === clientFolderPath);
+      const foundFolder = availableFolders.find(folder => folder.value === clientFolderPath); // Check value
       if (foundFolder) {
         setSelectedFolder(clientFolderPath);
       } else {
-        // Default to public models if client folder not found
-        const publicFolder = availableFolders.find(f => f.path === "publicModels");
-        setSelectedFolder(publicFolder ? publicFolder.path : availableFolders[0].path);
+        const publicFolder = availableFolders.find(f => f.value === "publicModels"); // Check value
+        setSelectedFolder(publicFolder ? publicFolder.value : availableFolders[0].value); // Check value
       }
     } else {
-      // For non-authenticated users, default to public models
-      const publicFolder = availableFolders.find(f => f.path === "publicModels");
-      setSelectedFolder(publicFolder ? publicFolder.path : availableFolders[0].path);
+      const publicFolder = availableFolders.find(f => f.value === "publicModels"); // Check value
+      setSelectedFolder(publicFolder ? publicFolder.value : availableFolders[0].value); // Check value
     }
   }, [auth, availableFolders]);
 
-  // Load model URLs from Firebase based on the selected folder
   useEffect(() => {
     const fetchModels = async () => {
-      if (!selectedFolder && selectedFolder !== "") { 
+      if (!selectedFolder && selectedFolder !== "") {
         console.warn("No folder selected to fetch models from.");
         setModelFiles([]);
         setSelectedModel(null);
@@ -104,12 +94,12 @@ export default function ClientHomePage({ embedMode = true, auth }) {
 
         setModelFiles(allUrls);
         if (allUrls.length > 0) {
-          setSelectedModel(allUrls[0]); 
+          setSelectedModel(allUrls[0]);
         } else {
-          setSelectedModel(null); 
+          setSelectedModel(null);
         }
-        setMeshNames([]); 
-        setMeshColors({}); 
+        setMeshNames([]);
+        setMeshColors({});
       } catch (error) {
         console.error(`Error fetching models from Firebase folder '${selectedFolder}':`, error);
         setModelFiles([]);
@@ -127,11 +117,10 @@ export default function ClientHomePage({ embedMode = true, auth }) {
     return () => window.removeEventListener('resize', handleResize);
   }, [selectedFolder]);
 
-  // Load mesh names + set initial colors when model changes
   useEffect(() => {
     if (!selectedModel) {
-      setMeshNames([]); 
-      setMeshColors({}); 
+      setMeshNames([]);
+      setMeshColors({});
       return;
     }
 
@@ -147,7 +136,7 @@ export default function ClientHomePage({ embedMode = true, auth }) {
 
       const initialColors = {};
       names.forEach((name) => {
-        initialColors[name] = meshColors[name] || "#FFFFFF"; 
+        initialColors[name] = meshColors[name] || "#FFFFFF";
       });
       setMeshColors(initialColors);
     }, undefined, (error) => {
@@ -183,85 +172,109 @@ export default function ClientHomePage({ embedMode = true, auth }) {
     userSelect: "none",
   };
 
+  // Transform modelFiles into options format for react-select
+  const modelOptions = modelFiles.map((model, index) => ({
+    value: model,
+    label: `Model ${index + 1}`
+  }));
+
+  // Find the currently selected folder option for react-select
+  const currentSelectedFolderOption = availableFolders.find(
+    (folder) => folder.value === selectedFolder
+  );
+
+  // Find the currently selected model option for react-select
+  const currentSelectedModelOption = modelOptions.find(
+    (model) => model.value === selectedModel
+  );
+
   return (
-    
     <div className="pagelayout">
       <motion.h1
-             className='about-heading'
-             initial={{ opacity: 0, y: 30 }}
-             animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-                      >
-              Collections
-        </motion.h1>
+        className='about-heading'
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
+        Collections
+      </motion.h1>
       {/* Folder Selection Dropdown */}
-      <div  >
-        <label htmlFor="folder-select" style={{ fontSize: "1.1rem" }}></label>
-        <select
-          id="folder-select"
-          onChange={(e) => setSelectedFolder(e.target.value)}
-          value={selectedFolder}
-          style={{
-            padding: "0.6rem 1rem",
-            borderRadius: "8px",
-            border: "1px solid #777",
-            background: "#666",
-            color: "white",
-            fontSize: "1rem",
-            cursor: "pointer"
-          }}
-        >
-          {loadingFolders ? (
-            <option value="">Loading folders...</option>
-          ) : folderError ? (
-            <option value="">Error loading folders</option>
-          ) : (
-            availableFolders.map((folder, index) => (
-              <option key={folder.path || `root-${index}`} value={folder.path}>
-                {folder.name}
-              </option>
-            ))
-          )}
-        </select>
+      <div>
+        
+       <Select
+              id="folder-select"
+              options={availableFolders}
+              value={currentSelectedFolderOption}
+              onChange={(option) => setSelectedFolder(option ? option.value : "")}
+              isLoading={loadingFolders}
+              isDisabled={folderError}
+              placeholder={folderError ? "Error loading folders" : "Select a folder..."}
+              classNamePrefix="my-select" 
+  
+        />
 
         {/* Model Selection Dropdown (visible when not in embed mode) */}
         {!embedMode && (
           <>
-            <label htmlFor="model-select" style={{ marginRight: "1rem", fontSize: "1.1rem" }}>Select Model:</label>
-            <select
+            <label htmlFor="model-select" style={{ marginRight: "1rem", fontSize: "1.1rem", marginLeft: "2rem" }}>Select Model:</label>
+            <Select
               id="model-select"
-              onChange={(e) => setSelectedModel(e.target.value)}
-              value={selectedModel || ''}
-              style={{
-                padding: "0.6rem 1rem",
-                borderRadius: "8px",
-                border: "1px solid #666",
-                background: "#555",
-                color: "white",
-                fontSize: "1rem",
-                cursor: "pointer"
+              options={modelOptions}
+              value={currentSelectedModelOption} // Use the option object
+              onChange={(option) => setSelectedModel(option ? option.value : null)} // Get value from option
+              isDisabled={modelFiles.length === 0}
+              placeholder={modelFiles.length === 0 ? "No models in this folder" : "Select a model..."}
+              styles={{
+                control: (baseStyles) => ({
+                  ...baseStyles,
+                  padding: "0.2rem 0.5rem",
+                  borderRadius: "8px",
+                  border: "1px solid #666",
+                  background: "#555",
+                  color: "white",
+                  fontSize: "1rem",
+                  cursor: "pointer",
+                  width: "200px", 
+                  minHeight: 'auto',
+                }),
+                singleValue: (baseStyles) => ({
+                  ...baseStyles,
+                  color: 'white',
+                }),
+                input: (baseStyles) => ({
+                  ...baseStyles,
+                  color: 'white',
+                }),
+                menu: (baseStyles) => ({
+                  ...baseStyles,
+                  backgroundColor: '#555',
+                  zIndex: 9999,
+                }),
+                option: (baseStyles, { isFocused, isSelected }) => ({
+                  ...baseStyles,
+                  backgroundColor: isSelected ? '#333' : isFocused ? '#444' : '#555',
+                  color: 'white',
+                  cursor: 'pointer',
+                  '&:active': {
+                    backgroundColor: '#222',
+                  },
+                }),
+                placeholder: (baseStyles) => ({
+                  ...baseStyles,
+                  color: '#bbb',
+                }),
               }}
-            >
-              {modelFiles.length === 0 ? (
-                <option value="">No models in this folder</option>
-              ) : (
-                modelFiles.map((model, index) => (
-                  <option key={index} value={model}>
-                    Model {index + 1}
-                  </option>
-                ))
-              )}
-            </select>
+            />
           </>
         )}
       </div>
 
       {/* Main Viewer Section */}
-      <div className="model-container model-container-design " >
+      <div className="model-container model-container-design" >
         {modelFiles.length > 1 && (
           <button onClick={prevModel} style={{ ...arrowStyle, position: "absolute", left: "10px" }} aria-label="Previous Model">&lt;</button>
         )}
-        
+
         <div className="model-viewer-canvas-wrapper" style={{ flexGrow: 1, height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
           {selectedModel ? (
             <Canvas camera={{ position: [-30, 50, -20], fov: 70 }} style={{ flex: 1 }}>
@@ -280,7 +293,7 @@ export default function ClientHomePage({ embedMode = true, auth }) {
             </p>
           )}
         </div>
-        
+
         {modelFiles.length > 1 && (
           <button onClick={nextModel} style={{ ...arrowStyle, position: "absolute", right: "10px" }} aria-label="Next Model">&gt;</button>
         )}
@@ -296,7 +309,7 @@ export default function ClientHomePage({ embedMode = true, auth }) {
                 <label style={{ marginRight: "1rem", fontSize: "1rem" }}>{name}:</label>
                 <input
                   type="color"
-                  value={meshColors[name] || "#FFFFFF"} 
+                  value={meshColors[name] || "#FFFFFF"}
                   onChange={(e) => handleColorChange(name, e.target.value)}
                   style={{
                     width: "60px",
@@ -317,11 +330,11 @@ export default function ClientHomePage({ embedMode = true, auth }) {
       )}
 
       {/* Mobile AR Viewer */}
-    <div className="ARModel-client">
-      {isMobile && selectedModel && (
-        <ARClothingViewer modelPath={selectedModel}  />
-      )}
-    </div>
+      <div className="ARModel-client">
+        {isMobile && selectedModel && (
+          <ARClothingViewer modelPath={selectedModel} isClientHomePage={true} />
+        )}
+      </div>
     </div>
   );
 }
