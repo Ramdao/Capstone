@@ -38,8 +38,8 @@ import './App.css'
 
 // Create Axios instance
 const api = axios.create({
-  baseURL: 'http://localhost:8000',
-  // baseURL: 'https://aliceblue-wolverine-462272.hostingersite.com',
+  // baseURL: 'http://localhost:8000',
+  baseURL: 'https://aliceblue-wolverine-462272.hostingersite.com',
   // enable withCredentials so cookies (including XSRF-TOKEN) are sent automatically
   withCredentials: true,
 });
@@ -394,7 +394,7 @@ function App() {
   const handleLogout = async () => {
     try {
       // Call csrf-cookie endpoint first to ensure the XSRF-TOKEN cookie is set
-      await api.get('/sanctum/csrf-cookie'); 
+      // await api.get('/sanctum/csrf-cookie'); 
       await api.post('/api/logout');
       setAuth(null);
       setError('');

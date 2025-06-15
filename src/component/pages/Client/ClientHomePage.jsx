@@ -7,15 +7,20 @@ import ClothingModel from "../../ClothingModel.jsx";
 import ARClothingViewer from "../../ARClothingViewer.jsx";
 import { storage, ref, listAll, getDownloadURL } from "../../../firebase.js";
 import './Modelhome.css';
-import Select from 'react-select'; // Import react-select
+import Select from 'react-select'; 
+import { Box3, Vector3 } from 'three';
 
 export default function ClientHomePage({ embedMode = true, auth }) {
   const [availableFolders, setAvailableFolders] = useState([
-    { value: "", label: "Root Folder" }, // Changed to value/label for react-select
-    { value: "publicModels", label: "Public Models" },
+    { value: "", label: "Summer" }, 
+    { value: "Classic", label: "Classic" },
+    { value: "Dramatic", label: "Dramartic" },
+    { value: "Gamine", label: "Gamine" },
+    { value: "Natural", label: "Natural" },
+    { value: "Romantic", label: "Romantic" },
   ]);
 
-  const [selectedFolder, setSelectedFolder] = useState("publicModels");
+  const [selectedFolder, setSelectedFolder] = useState("Summer");
   const [modelFiles, setModelFiles] = useState([]);
   const [selectedModel, setSelectedModel] = useState(null);
   const [meshNames, setMeshNames] = useState([]);
@@ -29,8 +34,12 @@ export default function ClientHomePage({ embedMode = true, auth }) {
     setFolderError(null);
     try {
       const publicFolders = [
-        { value: "", label: "Root Folder" },
-        { value: "publicModels", label: "Public Models" },
+        { value: "", label: "Summer" }, 
+        { value: "Classic", label: "Classic" },
+        { value: "Dramatic", label: "Dramartic" },
+        { value: "Gamine", label: "Gamine" },
+        { value: "Natural", label: "Natural" },
+        { value: "Romantic", label: "Romantic" },
       ];
 
       if (auth && auth.role === 'client' && auth.email) {
@@ -231,7 +240,7 @@ export default function ClientHomePage({ embedMode = true, auth }) {
                   borderRadius: "8px",
                   border: "1px solid #666",
                   background: "#555",
-                  color: "white",
+                  color: "black",
                   fontSize: "1rem",
                   cursor: "pointer",
                   width: "200px", 
@@ -239,11 +248,11 @@ export default function ClientHomePage({ embedMode = true, auth }) {
                 }),
                 singleValue: (baseStyles) => ({
                   ...baseStyles,
-                  color: 'white',
+                  color: 'black',
                 }),
                 input: (baseStyles) => ({
                   ...baseStyles,
-                  color: 'white',
+                  color: 'black',
                 }),
                 menu: (baseStyles) => ({
                   ...baseStyles,
@@ -253,7 +262,7 @@ export default function ClientHomePage({ embedMode = true, auth }) {
                 option: (baseStyles, { isFocused, isSelected }) => ({
                   ...baseStyles,
                   backgroundColor: isSelected ? '#333' : isFocused ? '#444' : '#555',
-                  color: 'white',
+                  color: 'black',
                   cursor: 'pointer',
                   '&:active': {
                     backgroundColor: '#222',
@@ -261,7 +270,7 @@ export default function ClientHomePage({ embedMode = true, auth }) {
                 }),
                 placeholder: (baseStyles) => ({
                   ...baseStyles,
-                  color: '#bbb',
+                  color: '#222',
                 }),
               }}
             />

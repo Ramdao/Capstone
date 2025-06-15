@@ -128,7 +128,6 @@ export default function AskAStylistPage({
             </label>
             <select
               id="stylist-select"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               value={localSelectedStylistId}
               onChange={(e) => setLocalSelectedStylistId(e.target.value)}
               disabled={isLoading}
@@ -143,15 +142,15 @@ export default function AskAStylistPage({
           </div>
 
           <div className="mb-6">
-            <label htmlFor="message-to-stylist" className="block text-gray-700 text-sm font-bold mb-2">
+            <label htmlFor="message-to-stylist">
               Your Message:
             </label>
             <textarea
               id="message-to-stylist"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-32"
+          
               value={localMessageToStylist}
               onChange={(e) => setLocalMessageToStylist(e.target.value)}
-              placeholder="Tell your stylist about your style preferences, needs, or any questions..."
+    
               disabled={isLoading}
             />
           </div>

@@ -33,7 +33,7 @@ export default function ClientAskAIPage() {
         const fetchModels = async () => {
             setModelLoading(true);
             setModelError(null);
-            const defaultModelFolder = "clients/defaultUser";
+            const defaultModelFolder = "";
 
             try {
                 const folderRef = ref(storage, defaultModelFolder);

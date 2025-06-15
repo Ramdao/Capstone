@@ -101,6 +101,8 @@ align-self: center;
 
 
 
+
+
 .button-nav:hover {
   
   background: linear-gradient(90deg, #ff0000, #FFB700);
@@ -152,6 +154,7 @@ input{
     border-width: 3px;
     border-color: white;
     background-color: #121212;
+    color: white;
 }
 
 .linkp{
@@ -176,6 +179,7 @@ select{
     border-color: white;
     background-color: transparent;
     color: white;
+    background-color: rgb(80, 80, 80) ;
 }
 
 .user-profile-table-container {
@@ -210,7 +214,7 @@ select{
 /* Style the table headers (labels) */
 .user-profile-table-container th {
   font-weight: bold; 
-  color: #555; 
+  color: #cecece; 
   padding-right: 15px; 
   white-space: nowrap; 
 }
@@ -267,7 +271,7 @@ ul{
   }
 
   .login{
-    padding: 20px;
+    padding: 30px;
   }
 
   select{
@@ -296,12 +300,19 @@ ul{
 
  
 
-  .events-container{
-    top:80%;
-    left:25%
+  .holiday-container{
+   position: absolute;
+   top:100%;
+   left:25%
   }
 
+ .events-container{
+  left:-40px;
+  width: 110vw;
+ }
+
   .weather-box{
+    
     margin-left: 0px;
   }
 }

@@ -329,6 +329,9 @@ display: inline-block;
   align-content: center;
   justify-content: center;
 }
+.upload{
+    width: 99.6%;
+}
 
 .nav-admin:hover{
     background: linear-gradient(90deg, #ff0000, #FFB700);

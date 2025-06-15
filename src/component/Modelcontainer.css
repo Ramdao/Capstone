@@ -31,7 +31,7 @@
     
     .model-container-home{
     
-      left: 28.5%;
+      left: 30%;
       top: 35%;
       height: 50vh;
       width: 70vw;
@@ -46,8 +46,8 @@
 
     .ARmodel{
       position:absolute;
-      top:110%;
-      right:16%;
+      top:120%;
+      right:17%;
       width: 90%;
     }
   
