@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import '../PageGlobal.css'; 
+import '../PageGlobal.css';
+// Import Firebase Storage functions
+import { storage, ref, listAll, deleteObject } from '../../../firebase.js';
 
 export default function AdminClientDetail({
   auth,
@@ -29,7 +31,6 @@ export default function AdminClientDetail({
     body_type: '',
     colors: '',
     message_to_stylist: '',
-    // stylist_id: '', // Admin should not directly assign stylist here via profile edit
   });
 
   const fetchClientDetail = async () => {
@@ -47,7 +48,6 @@ export default function AdminClientDetail({
         body_type: fetchedClient.body_type || '',
         colors: Array.isArray(fetchedClient.colors) ? fetchedClient.colors.join(', ') : (fetchedClient.colors || ''),
         message_to_stylist: fetchedClient.message_to_stylist || '',
-        // stylist_id: fetchedClient.stylist_id || '',
       });
       setError('');
     } catch (err) {
@@ -80,13 +80,12 @@ export default function AdminClientDetail({
         body_type: location.state.client.body_type || '',
         colors: Array.isArray(location.state.client.colors) ? location.state.client.colors.join(', ') : (location.state.client.colors || ''),
         message_to_stylist: location.state.client.message_to_stylist || '',
-        // stylist_id: location.state.client.stylist_id || '',
       });
     } else {
       // If not in state, fetch from API
       fetchClientDetail();
     }
-  }, [clientId, location.state, auth, navigate, setError, setSuccess, api]); // Added api to dependencies
+  }, [clientId, location.state, auth, navigate, setError, setSuccess, api]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -107,9 +106,40 @@ export default function AdminClientDetail({
 
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this client's account? This action cannot be undone.")) {
+      setSuccess(''); // Clear previous success messages
+      setError(''); // Clear previous error messages
+
+      if (!client || !client.user || !client.user.email) {
+        setError("Client email not available to delete storage folder.");
+        return;
+      }
+
+      const clientEmailPath = client.user.email;
+      const folderPath = `clients/${clientEmailPath}`;
+      const folderRef = ref(storage, folderPath);
+
+      try {
+        // List all items (files) within the client's folder
+        const listResult = await listAll(folderRef);
+
+        // Delete all files in the folder
+        const deleteFilePromises = listResult.items.map(itemRef => deleteObject(itemRef));
+        await Promise.all(deleteFilePromises);
+
+        setSuccess("Client's storage folder and its contents deleted successfully.");
+      } catch (storageError) {
+        console.error("Error deleting client's storage folder:", storageError);
+        setError(`Failed to delete client's storage folder: ${storageError.message}. Proceeding with account deletion.`);
+        
+      }
+
+      // Proceed with deleting the client record from the database
       const isSuccess = await handleAdminDeleteClient(clientId);
       if (isSuccess) {
         navigate('/all-client-list'); // Redirect to list after deletion
+      } else {
+        
+        setError((prevError) => prevError ? `${prevError} And failed to delete client account from database.` : "Failed to delete client account from database.");
       }
     }
   };
@@ -126,10 +156,12 @@ export default function AdminClientDetail({
     );
   }
 
+  // Ensure colors are displayed correctly, handling both array and stringified array formats
   const clientColors = Array.isArray(client.colors)
     ? client.colors.join(', ')
-    : (client.colors ? JSON.parse(client.colors).join(', ') : 'N/A'); // Handle stringified array from backend
-
+    : (client.colors && typeof client.colors === 'string' && client.colors.startsWith('[') && client.colors.endsWith(']'))
+      ? JSON.parse(client.colors).join(', ')
+      : 'N/A';
 
   return (
     <div className='pagelayout'>
@@ -160,7 +192,6 @@ export default function AdminClientDetail({
             <p className='profile-styling'><strong>Body Type:</strong> {client.body_type || 'N/A'}</p>
             <p className='profile-styling'><strong>Favorite Colors:</strong> {clientColors}</p>
             <p className='profile-styling'><strong>Message to Stylist:</strong> {client.message_to_stylist || 'No message'}</p>
-            {/* <p><strong>Assigned Stylist ID:</strong> {client.stylist_id || 'N/A'}</p> */}
 
             <div className="mt-6 space-x-4">
               <button
@@ -184,7 +215,7 @@ export default function AdminClientDetail({
             </div>
           </div>
         ) : (
-      
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">Name:</label>
@@ -222,13 +253,13 @@ export default function AdminClientDetail({
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="message_to_stylist">Message to Stylist:</label>
               <textarea name="message_to_stylist" id="message_to_stylist" value={formData.message_to_stylist} onChange={handleChange} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
             </div>
-          
+
             <div className="mt-6 space-x-4">
               <button type="submit" className="button-nav update">Save Changes</button>
               <button type="button" onClick={() => setEditMode(false)} className="button-nav update">Cancel</button>
             </div>
           </form>
-         
+
         )}
       </motion.div>
     </div>

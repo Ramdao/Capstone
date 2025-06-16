@@ -1,9 +1,9 @@
-// src/api/calendarApi.js
+// Compied from examples from google console
 
 const API_KEY = import.meta.env.VITE_CALANDER_API_KEY;
-const MAX_RESULTS = 5; // Changed to 5
+const MAX_RESULTS = 5; 
 
-export async function fetchCalendarEvents(calendarIdentifier) { // Renamed and accepts calendarIdentifier
+export async function fetchCalendarEvents(calendarIdentifier) { 
     if (!calendarIdentifier) {
         throw new Error("Calendar identifier is required.");
     }

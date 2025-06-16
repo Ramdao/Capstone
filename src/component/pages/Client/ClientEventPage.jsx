@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import '../PageGlobal.css'; 
-import { fetchCurrentWeather } from '../../../weatherApi'; // Your weather API utility
-import { fetchCalendarEvents } from '../../../calendarApi'; // Your calendar API utility
+import { fetchCurrentWeather } from '../../../weatherApi'; // weather API utility
+import { fetchCalendarEvents } from '../../../calendarApi'; // calendar API utility
 
 // Define a mapping of friendly names to Google Calendar IDs for holidays
 const CALENDAR_OPTIONS = [
@@ -62,7 +62,7 @@ export default function ClientEventPage({ auth }) {
         };
 
         getWeather();
-    }, [city, countryCode, units]); // Dependencies for weather fetch
+    }, [city, countryCode, units]); 
 
     // --- useEffect for Holiday Calendar Determination (uses full country name) ---
     useEffect(() => {
@@ -76,7 +76,7 @@ export default function ClientEventPage({ auth }) {
             let finalCalendarOption = CALENDAR_OPTIONS[0]; // Default to Canada
 
             if (clientCountryNameFromAuth) {
-                // Find the calendar option where the 'name' matches the full country name from auth
+                
                 const foundOption = CALENDAR_OPTIONS.find(
                     (option) => option.name.toLowerCase() === clientCountryNameFromAuth.toLowerCase()
                 );
@@ -92,18 +92,18 @@ export default function ClientEventPage({ auth }) {
 
             setSelectedCalendarId(finalCalendarOption.id);
             setSelectedCalendarCountryName(finalCalendarOption.name);
-            // setHolidaysLoading(false) is handled by the next useEffect when it starts fetching
+            
         };
 
         getHolidaysBasedOnCountry();
-    }, [auth]); // Re-run this effect if the auth prop changes
+    }, [auth]); 
 
     // --- useEffect for Holiday Events Fetching (depends on selectedCalendarId) ---
     useEffect(() => {
         const fetchHolidays = async () => {
             if (!selectedCalendarId) {
-                // Don't fetch until selectedCalendarId is determined
-                setHolidaysLoading(false); // Ensure loading is off if no ID
+                
+                setHolidaysLoading(false); 
                 return;
             }
             setHolidaysLoading(true);
@@ -119,7 +119,7 @@ export default function ClientEventPage({ auth }) {
         };
 
         fetchHolidays();
-    }, [selectedCalendarId]); // Re-fetch holidays when the selected calendar ID changes
+    }, [selectedCalendarId]); 
 
     // --- Handlers for manual weather input (kept as per your previous code) ---
     const handleCityChange = (e) => {
@@ -127,8 +127,7 @@ export default function ClientEventPage({ auth }) {
     };
 
     const handleCountryChange = (e) => {
-        // This input is for the WEATHER API, which usually expects 2-letter codes.
-        // For holidays, it relies on the 'auth' prop.
+        
         setCountryCode(e.target.value);
     };
 
@@ -137,8 +136,8 @@ export default function ClientEventPage({ auth }) {
     };
 
     const handleSubmit = (e) => {
-        e.preventDefault(); // Prevent page reload on form submission
-        // Weather useEffect will re-fetch when city/countryCode/units state changes.
+        e.preventDefault(); 
+        
     };
 
     // --- Conditional Rendering if not logged in as a client ---

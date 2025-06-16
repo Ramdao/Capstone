@@ -1,7 +1,7 @@
-// src/ClothingModel.jsx
+
 import React, { useEffect, useMemo } from "react";
 import { useGLTF } from "@react-three/drei";
-import * as THREE from 'three'; // Import Three.js for creating materials
+import * as THREE from 'three'; 
 
 // Helper function for consistent pseudo-random numbers based on a string seed.
 function mulberry32(seed) {
@@ -101,7 +101,7 @@ function ClothingModel({ modelPath, meshColors, uniformColor }) {
         });
       }
     });
-  }, [clonedScene, meshColors, uniformColor]); // Depend on clonedScene, meshColors, and uniformColor
+  }, [clonedScene, meshColors, uniformColor]); 
 
   if (!clonedScene) {
     return null;

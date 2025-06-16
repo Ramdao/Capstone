@@ -1,4 +1,4 @@
-// src/firebase.js
+// Used example from firebase studio
 
 import { initializeApp } from "firebase/app";
 import {

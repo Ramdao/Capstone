@@ -67,16 +67,16 @@ export default function ClientHomePage({ embedMode = true, auth }) {
   useEffect(() => {
     if (auth && auth.role === 'client' && auth.email && availableFolders.length > 0) {
       const clientFolderPath = `clients/${auth.email}/`;
-      const foundFolder = availableFolders.find(folder => folder.value === clientFolderPath); // Check value
+      const foundFolder = availableFolders.find(folder => folder.value === clientFolderPath); 
       if (foundFolder) {
         setSelectedFolder(clientFolderPath);
       } else {
-        const publicFolder = availableFolders.find(f => f.value === "publicModels"); // Check value
-        setSelectedFolder(publicFolder ? publicFolder.value : availableFolders[0].value); // Check value
+        const publicFolder = availableFolders.find(f => f.value === "publicModels"); 
+        setSelectedFolder(publicFolder ? publicFolder.value : availableFolders[0].value); 
       }
     } else {
-      const publicFolder = availableFolders.find(f => f.value === "publicModels"); // Check value
-      setSelectedFolder(publicFolder ? publicFolder.value : availableFolders[0].value); // Check value
+      const publicFolder = availableFolders.find(f => f.value === "publicModels"); 
+      setSelectedFolder(publicFolder ? publicFolder.value : availableFolders[0].value); 
     }
   }, [auth, availableFolders]);
 

@@ -85,8 +85,7 @@ export default function ClientProfilePage({
       .map(c => c.trim())
       .filter(Boolean)
       .map(color => {
-        // Ensure color starts with # and is valid (if it's a hex code)
-        // If you only expect names (e.g., "red"), remove the '#' prepend.
+        
         if (!color.startsWith('#') && !/^[0-9a-fA-F]{3,6}$/.test(color)) { // Simple check for hex without #
           // Assuming non-hex colors are names, no # needed
         } else if (!color.startsWith('#')) {

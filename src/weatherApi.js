@@ -1,4 +1,4 @@
-// src/api/weatherApi.js
+// used examples from openweatherapi
 
 // Import the API Key directly from environment variables
 const OPENWEATHER_API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;

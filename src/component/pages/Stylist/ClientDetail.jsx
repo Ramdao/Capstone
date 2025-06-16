@@ -45,8 +45,7 @@ export default function ClientDetail({
       return;
     }
 
-    // Determine the folder name dynamically using the client's email
-    // Replace dots with ' DOT ' if your Firebase rules or storage structure requires it
+    
     const clientEmailPath = client.user.email;
     const folderName = `clients/${clientEmailPath}`;
     
@@ -75,8 +74,7 @@ export default function ClientDetail({
           setUploadSuccess("Upload complete!");
           setUploadError(""); // Clear error message on success
           setFile(null); // Clear the selected file after successful upload
-          // Optionally, you might want to save this URL to the client's profile in Firestore
-          // Example: auth.updateClientProfile(client.id, { uploadedModels: [...client.uploadedModels, url] });
+         
         });
       }
     );

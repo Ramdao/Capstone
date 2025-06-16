@@ -1,14 +1,14 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { storage, ref, listAll, getDownloadURL, deleteObject, uploadBytesResumable } from '../../../firebase.js'; 
+import { storage, ref, listAll, getDownloadURL, deleteObject, uploadBytesResumable } from '../../../firebase.js';
 import { FiChevronDown, FiChevronUp, FiX, FiChevronLeft, FiChevronRight, FiTrash2 } from 'react-icons/fi';
 import '../PageGlobal.css';
-import './AdminHomePage.css'; 
+import './AdminHomePage.css';
 
-// Import Three.js components
+
 import { Canvas } from "@react-three/fiber";
 import { Bounds, OrbitControls } from "@react-three/drei";
-import ClothingModel from "../../ClothingModel.jsx"; 
+import ClothingModel from "../../ClothingModel.jsx";
 
 export default function AdminHomePage({ auth, setError, setSuccess }) {
     const [availableFolders, setAvailableFolders] = useState([]);
@@ -25,13 +25,11 @@ export default function AdminHomePage({ auth, setError, setSuccess }) {
     const [deleteSuccess, setDeleteSuccess] = useState(null);
     const [deleteError, setDeleteError] = useState(null);
 
-    // New states for upload functionality
     const [selectedFile, setSelectedFile] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [uploadError, setUploadError] = useState(null);
     const [uploadSuccess, setUploadSuccess] = useState(null);
-
 
     // Fetches all available folders in Firebase Storage, including client folders
     const fetchAllFolders = useCallback(async () => {
@@ -44,14 +42,15 @@ export default function AdminHomePage({ auth, setError, setSuccess }) {
 
         setLoadingFolders(true);
         setFolderError(null);
-        // Initial set of predefined folders
+        // Initial set of predefined folders with trailing slashes
         let folders = [
+            
             { path: "", name: "Summer" }, 
-            { path: "Classic", name: "Classic" },
-            { path: "Dramatic", name: "Dramatic" },
-            { path: "Gamine", name: "Gamine" },
-            { path: "Natural", name: "Natural" },
-            { path: "Romantic", name: "Romantic" }
+            { path: "Classic/", name: "Classic" },
+            { path: "Dramatic/", name: "Dramatic" },
+            { path: "Gamine/", name: "Gamine" },
+            { path: "Natural/", name: "Natural" },
+            { path: "Romantic/", name: "Romantic" }
         ];
 
         try {
@@ -70,8 +69,9 @@ export default function AdminHomePage({ auth, setError, setSuccess }) {
             });
 
             setAvailableFolders(folders);
-            // Set the default selected folder, prioritizing "Public Models" if available
-            setSelectedFolder(folders.length > 1 ? folders[1].path : folders[0].path);
+            // Set the default selected folder, prioritizing "Public Models" if available.
+            // Ensure a default is always set, perhaps the first non-client folder.
+            setSelectedFolder(folders.length > 0 ? folders[0].path : '');
 
         } catch (error) {
             console.error("Error fetching all Firebase folders:", error);
@@ -148,7 +148,7 @@ export default function AdminHomePage({ auth, setError, setSuccess }) {
         if (!modelFiles.length) return; // Do nothing if no models are loaded
 
         const totalModels = modelFiles.length;
-        let newIndex = direction === 'next' 
+        let newIndex = direction === 'next'
             ? (currentModelIndex + 1) % totalModels // Wrap around to the beginning
             : (currentModelIndex - 1 + totalModels) % totalModels; // Wrap around to the end
 
@@ -170,7 +170,7 @@ export default function AdminHomePage({ auth, setError, setSuccess }) {
             return;
         }
 
-        // Confirmation dialog (using window.confirm, consider a custom modal for better UX)
+       
         if (!window.confirm(`Are you sure you want to delete this model?\n${selectedModelForViewer.substring(selectedModelForViewer.lastIndexOf('/') + 1).split('?')[0]}`)) {
             return; // User cancelled deletion
         }
@@ -225,10 +225,10 @@ export default function AdminHomePage({ auth, setError, setSuccess }) {
         setUploadError(null);
         setUploadSuccess(null);
 
-        // Construct the full path for the file in Firebase Storage
+        
         const filePath = `${selectedFolder}${selectedFile.name}`;
         const modelRef = ref(storage, filePath);
-        
+
         // Start the upload task with progress tracking
         const uploadTask = uploadBytesResumable(modelRef, selectedFile);
 
@@ -255,7 +255,6 @@ export default function AdminHomePage({ auth, setError, setSuccess }) {
             }
         );
     };
-
 
     return (
         <div className="admin-page-container">
@@ -306,7 +305,6 @@ export default function AdminHomePage({ auth, setError, setSuccess }) {
 
                 {/* Upload New Model Section */}
                 <div className="upload-section">
-                  
                     <input
                         type="file"
                         accept=".glb,.gltf" // Restrict to GLB and GLTF file types
@@ -319,7 +317,7 @@ export default function AdminHomePage({ auth, setError, setSuccess }) {
                         onClick={handleFileUpload}
                         className="nav-admin upload-button"
                         // Disable if no file selected, already uploading, or no folder selected
-                        disabled={!selectedFile || uploading || !selectedFolder} 
+                        disabled={!selectedFile || uploading || !selectedFolder}
                     >
                         {uploading ? `Uploading (${uploadProgress.toFixed(0)}%)` : 'Upload Model'}
                     </button>
@@ -350,14 +348,14 @@ export default function AdminHomePage({ auth, setError, setSuccess }) {
                                     className="nav-admin"
                                     disabled={deletingModel}
                                 >
-                                    
+
                                     {deletingModel ? 'Deleting...' : 'Delete'}
                                 </button>
                                 <button
                                     onClick={handleCloseViewer}
                                     className="nav-admin"
                                 >
-                                   
+
                                     Close
                                 </button>
                             </div>
@@ -403,19 +401,19 @@ export default function AdminHomePage({ auth, setError, setSuccess }) {
 
                 {/* Models List */}
                 <div className="models-list-container">
-                   
-                    
+
+
                     {loadingModels && (
                         <div className="loading-indicator">
                             <div className="spinner"></div>
                             <span>Loading models...</span>
                         </div>
                     )}
-                    
+
                     {modelFetchError && (
                         <div className="error-message">{modelFetchError}</div>
                     )}
-                    
+
                     {!loadingModels && modelFiles.length === 0 && !modelFetchError && (
                         <div className="empty-state">
                             <p>No models found in this location.</p>

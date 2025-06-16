@@ -22,7 +22,9 @@ export default function ContactPage() {
         
         
       >
-        <p>For inquiries, please email us at: </p>
+        <p style={{marginLeft:"20px"}}>For inquiries and bug report, please email us at: 
+          <a href="mailto:radin00@hotmail.com">Admin</a>
+        </p>
       </motion.div>
     </div>
 )

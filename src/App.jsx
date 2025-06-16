@@ -1,4 +1,5 @@
 // App.jsx
+// AI prompt: how to set up Axios, how to set up firebase
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useEffect, useState, useCallback } from 'react';

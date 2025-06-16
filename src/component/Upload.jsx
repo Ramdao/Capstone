@@ -1,3 +1,4 @@
+// AI prompt:how to set up firebase uplodad
 import { useState } from "react";
 import { storage, ref, uploadBytesResumable, getDownloadURL } from "../firebase";
 

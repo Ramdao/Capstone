@@ -69,7 +69,7 @@ export default function HomeNav({ auth, handleLogout }) {
             className="nav-link"
             onClick={() => {
               if (item.action) { 
-                item.action(); // Execute the action first
+                item.action(); 
               }
               setMenuOpen(false); 
             }}
