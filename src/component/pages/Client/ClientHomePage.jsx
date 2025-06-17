@@ -7,20 +7,12 @@ import ClothingModel from "../../ClothingModel.jsx";
 import ARClothingViewer from "../../ARClothingViewer.jsx";
 import { storage, ref, listAll, getDownloadURL } from "../../../firebase.js";
 import './Modelhome.css';
-import Select from 'react-select'; 
+import Select from 'react-select';
 import { Box3, Vector3 } from 'three';
 
 export default function ClientHomePage({ embedMode = true, auth }) {
-  const [availableFolders, setAvailableFolders] = useState([
-    { value: "", label: "Summer" }, 
-    { value: "Classic", label: "Classic" },
-    { value: "Dramatic", label: "Dramartic" },
-    { value: "Gamine", label: "Gamine" },
-    { value: "Natural", label: "Natural" },
-    { value: "Romantic", label: "Romantic" },
-  ]);
-
-  const [selectedFolder, setSelectedFolder] = useState("Summer");
+  const [availableFolders, setAvailableFolders] = useState([]); // Initialize as empty
+  const [selectedFolder, setSelectedFolder] = useState(""); // Initialize as empty
   const [modelFiles, setModelFiles] = useState([]);
   const [selectedModel, setSelectedModel] = useState(null);
   const [meshNames, setMeshNames] = useState([]);
@@ -34,13 +26,16 @@ export default function ClientHomePage({ embedMode = true, auth }) {
     setFolderError(null);
     try {
       const publicFolders = [
-        { value: "", label: "Summer" }, 
+        { value: "", label: "Summer" },
         { value: "Classic", label: "Classic" },
-        { value: "Dramatic", label: "Dramartic" },
+        { value: "Dramatic", label: "Dramatic" }, // Corrected typo
         { value: "Gamine", label: "Gamine" },
         { value: "Natural", label: "Natural" },
         { value: "Romantic", label: "Romantic" },
       ];
+
+      let foldersToSet = [...publicFolders];
+      let initialFolderToSelect = publicFolders[0].value; // Default to Summer
 
       if (auth && auth.role === 'client' && auth.email) {
         const clientFolderPath = `clients/${auth.email}/`;
@@ -48,41 +43,40 @@ export default function ClientHomePage({ embedMode = true, auth }) {
           value: clientFolderPath,
           label: `My Models (${auth.email})`
         };
-        setAvailableFolders([...publicFolders, clientFolder]);
-      } else {
-        setAvailableFolders(publicFolders);
+        foldersToSet = [...publicFolders, clientFolder];
+        initialFolderToSelect = clientFolderPath; // Set client folder as initial if client
       }
+
+      setAvailableFolders(foldersToSet);
+      setSelectedFolder(initialFolderToSelect); // Set selected folder immediately after availableFolders is determined
     } catch (error) {
       console.error("Error fetching Firebase folders:", error);
       setFolderError("Failed to load folders. Please try again.");
+      // Even on error, attempt to set to public folders if possible
+      setAvailableFolders([
+        { value: "", label: "Summer" },
+        { value: "Classic", label: "Classic" },
+        { value: "Dramatic", label: "Dramatic" },
+        { value: "Gamine", label: "Gamine" },
+        { value: "Natural", label: "Natural" },
+        { value: "Romantic", label: "Romantic" },
+      ]);
+      setSelectedFolder(""); // Fallback to Summer
     } finally {
       setLoadingFolders(false);
     }
-  }, [auth]);
+  }, [auth]); // Dependency on auth to refetch if auth changes
 
   useEffect(() => {
     fetchFirebaseFolders();
   }, [fetchFirebaseFolders]);
 
-  useEffect(() => {
-    if (auth && auth.role === 'client' && auth.email && availableFolders.length > 0) {
-      const clientFolderPath = `clients/${auth.email}/`;
-      const foundFolder = availableFolders.find(folder => folder.value === clientFolderPath); 
-      if (foundFolder) {
-        setSelectedFolder(clientFolderPath);
-      } else {
-        const publicFolder = availableFolders.find(f => f.value === "publicModels"); 
-        setSelectedFolder(publicFolder ? publicFolder.value : availableFolders[0].value); 
-      }
-    } else {
-      const publicFolder = availableFolders.find(f => f.value === "publicModels"); 
-      setSelectedFolder(publicFolder ? publicFolder.value : availableFolders[0].value); 
-    }
-  }, [auth, availableFolders]);
+ 
 
   useEffect(() => {
     const fetchModels = async () => {
-      if (!selectedFolder && selectedFolder !== "") {
+      // Ensure selectedFolder is not null or undefined before proceeding
+      if (selectedFolder === null || selectedFolder === undefined) {
         console.warn("No folder selected to fetch models from.");
         setModelFiles([]);
         setSelectedModel(null);
@@ -118,13 +112,18 @@ export default function ClientHomePage({ embedMode = true, auth }) {
       }
     };
 
-    fetchModels();
+    // Only fetch models if selectedFolder is not empty string (or if it's explicitly "")
+    // and availableFolders is populated to avoid fetching before initial setup
+    if (selectedFolder !== null && availableFolders.length > 0) {
+      fetchModels();
+    }
+
 
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener('resize', handleResize);
     handleResize();
     return () => window.removeEventListener('resize', handleResize);
-  }, [selectedFolder]);
+  }, [selectedFolder, availableFolders]); // Add availableFolders as dependency here
 
   useEffect(() => {
     if (!selectedModel) {
@@ -209,17 +208,16 @@ export default function ClientHomePage({ embedMode = true, auth }) {
       </motion.h1>
       {/* Folder Selection Dropdown */}
       <div>
-        
-       <Select
-              id="folder-select"
-              options={availableFolders}
-              value={currentSelectedFolderOption}
-              onChange={(option) => setSelectedFolder(option ? option.value : "")}
-              isLoading={loadingFolders}
-              isDisabled={folderError}
-              placeholder={folderError ? "Error loading folders" : "Select a folder..."}
-              classNamePrefix="my-select" 
-  
+
+        <Select
+          id="folder-select"
+          options={availableFolders}
+          value={currentSelectedFolderOption}
+          onChange={(option) => setSelectedFolder(option ? option.value : "")}
+          isLoading={loadingFolders}
+          isDisabled={folderError}
+          placeholder={folderError ? "Error loading folders" : "Select a folder..."}
+          classNamePrefix="my-select"
         />
 
         {/* Model Selection Dropdown (visible when not in embed mode) */}
@@ -243,7 +241,7 @@ export default function ClientHomePage({ embedMode = true, auth }) {
                   color: "black",
                   fontSize: "1rem",
                   cursor: "pointer",
-                  width: "200px", 
+                  width: "200px",
                   minHeight: 'auto',
                 }),
                 singleValue: (baseStyles) => ({

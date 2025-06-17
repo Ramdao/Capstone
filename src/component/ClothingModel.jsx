@@ -3,7 +3,7 @@ import React, { useEffect, useMemo } from "react";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from 'three'; 
 
-// Helper function for consistent pseudo-random numbers based on a string seed.
+// AI: Prompt how to generate range of hex colors
 function mulberry32(seed) {
   let s0 = seed.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) >>> 0;
   return function() {
@@ -40,7 +40,7 @@ const getVariedColor = (baseColorHex, meshName) => {
 function ClothingModel({ modelPath, meshColors, uniformColor }) {
   const { scene } = useGLTF(modelPath);
 
-  // Use useMemo to create a cloned scene and clone all materials ONCE when the scene or modelPath changes.
+  
   const clonedScene = useMemo(() => {
     if (!scene) return null;
 
@@ -58,7 +58,7 @@ function ClothingModel({ modelPath, meshColors, uniformColor }) {
     return cloned;
   }, [scene, modelPath]); // Re-clone only if the original scene or modelPath changes
 
-  // useEffect hook to apply colors to the model's meshes whenever meshColors or uniformColor changes.
+  // useEffect hook to apply colors to the models meshes whenever meshColors or uniformColor changes.
   useEffect(() => {
     if (!clonedScene) {
       // console.log('ClothingModel useEffect: clonedScene not yet available.');
@@ -67,7 +67,7 @@ function ClothingModel({ modelPath, meshColors, uniformColor }) {
 
     clonedScene.traverse((child) => {
       if (child.isMesh) {
-        // Ensure child.material is an object and not undefined/null
+        
         if (!child.material) {
           // console.warn(`ClothingModel: Mesh ${child.name} has no material to modify. Skipping.`);
           return;
