@@ -190,7 +190,7 @@ export default function CollectionPage() {
 
             {/* Folder Selection Dropdown */}
             <div style={{ marginBottom: "20px" }}> {/* Added some margin for spacing */}
-                <label htmlFor="folder-select" style={{ fontSize: "1.1rem", color: "#ddd", marginRight: "10px" }}>Select Collection:</label>
+
                 <select
                     id="folder-select"
                     onChange={(e) => setSelectedFolder(e.target.value)}

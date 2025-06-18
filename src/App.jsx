@@ -334,14 +334,14 @@ function App() {
       }
       // --- End Firebase Storage Logic ---
 
-
-      if (res.data.user.role === 'client') {
-        navigate('/client-dashboard');
+        if (res.data.user.role === 'client') {
+        navigate('/');
       } else if (res.data.user.role === 'stylist') {
-        navigate('/stylist-dashboard');
+        navigate('/');
       } else {
         navigate('/');
       }
+      
       window.location.reload();
       return true;
     } catch (err) {
